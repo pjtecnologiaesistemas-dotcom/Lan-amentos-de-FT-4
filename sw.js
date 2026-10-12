@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ft-pj-cache-v8';
+const CACHE_NAME = 'ft-pj-cache-v9';
 const APP_SHELL = [
   './',
   './index.html',
