@@ -935,6 +935,51 @@
   #railUsuarioInfo { display: none; margin: 10px 14px 0; font-size: .75rem; color: var(--muted); line-height: 1.35; word-break: break-word; }
   #railUsuarioInfo strong { color: var(--text); display: block; }
   @media (prefers-reduced-motion: reduce) { .auth-spin { animation-duration: 2s; } }
+
+  /* ── Admin: Acessos + Auditoria ── */
+  .rail-items .rail-item:nth-child(8) { --i: 7; }
+  .rail-badge { display: none; margin-left: 8px; min-width: 20px; padding: 1px 7px; border-radius: 20px; background: var(--danger); color: #fff; font: 800 .68rem 'Exo 2', sans-serif; text-align: center; }
+  .adm-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .adm-chip { border: 1px solid var(--border); background: var(--input-bg); color: var(--text); border-radius: 20px; padding: 8px 14px; font: 700 .76rem 'Exo 2', sans-serif; cursor: pointer; }
+  .adm-chip b { color: var(--accent1); margin-left: 4px; }
+  .adm-chip.on { border-color: var(--accent1); color: var(--accent1); background: rgba(0,212,255,.1); }
+  .adm-busca { width: 100%; margin-bottom: 14px; background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: .9rem; }
+  .adm-card, .adm-aud-card { background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--accent1); border-radius: var(--radius); padding: 14px 15px; box-shadow: var(--shadow); margin-bottom: 10px; }
+  .adm-card.pendente { border-left-color: var(--accent4); }
+  .adm-card.aprovado { border-left-color: var(--accent2); }
+  .adm-card.bloqueado { border-left-color: var(--danger); }
+  .adm-aud-card.add { border-left-color: var(--accent2); }
+  .adm-aud-card.del { border-left-color: var(--danger); }
+  .adm-aud-card.alt { border-left-color: var(--accent4); }
+  .adm-aud-card.acc { border-left-color: var(--purple); }
+  .adm-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  .adm-nome { font: 700 1rem 'Exo 2', sans-serif; word-break: break-word; }
+  .adm-linha { font-size: .8rem; color: var(--muted); margin-top: 4px; word-break: break-word; }
+  .adm-linha b { color: var(--text); }
+  .adm-data { font-size: .7rem; color: var(--muted); font-weight: 700; white-space: nowrap; }
+  .adm-pill { font: 800 .62rem 'Exo 2', sans-serif; letter-spacing: .4px; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; white-space: nowrap; background: rgba(0,212,255,.15); color: var(--accent1); }
+  .adm-pill.pendente { background: rgba(253,150,68,.16); color: var(--accent4); }
+  .adm-pill.aprovado, .adm-pill.aud-add { background: rgba(38,222,129,.16); color: var(--accent2); }
+  .adm-pill.bloqueado, .adm-pill.aud-del { background: rgba(252,92,101,.16); color: var(--danger); }
+  .adm-pill.aud-alt { background: rgba(253,150,68,.16); color: var(--accent4); }
+  .adm-pill.aud-acc, .adm-pill.admin { background: rgba(165,94,234,.18); color: var(--purple); }
+  .adm-acoes { display: flex; gap: 8px; margin-top: 12px; }
+  .adm-btn { flex: 1; border: none; border-radius: 10px; padding: 12px 8px; cursor: pointer; font: 800 .8rem 'Exo 2', sans-serif; }
+  .adm-btn:active { transform: scale(.97); }
+  .adm-btn.ok { background: linear-gradient(135deg, var(--accent2), var(--accent3)); color: #0d1117; }
+  .adm-btn.no { background: rgba(252,92,101,.16); color: var(--danger); border: 1px solid rgba(252,92,101,.4); }
+  .adm-filtros { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+  .adm-filtros input, .adm-filtros select { width: 100%; background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: .9rem; }
+  .adm-resumo { font-size: .76rem; color: var(--muted); font-weight: 700; margin: 0 2px 10px; }
+  .adm-aud-titulo { font-size: .92rem; line-height: 1.4; word-break: break-word; margin-bottom: 4px; }
+  .adm-det { margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 8px; }
+  .adm-det summary { cursor: pointer; font: 700 .76rem 'Exo 2', sans-serif; color: var(--accent1); }
+  .adm-det-linha { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; font-size: .8rem; margin-top: 6px; word-break: break-word; }
+  .adm-det-k { color: var(--muted); font-weight: 700; }
+  .adm-det-de { color: var(--danger); text-decoration: line-through; opacity: .85; }
+  .adm-det-para { color: var(--accent2); }
+  .adm-det-seta { color: var(--muted); }
+  .adm-det-sub { font: 800 .64rem 'Exo 2', sans-serif; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -1088,6 +1133,8 @@
     <button type="button" class="tab-btn rail-item" data-tab="tab-pagamentos"><span class="rail-icon">&#x1F9FE;</span><span class="rail-label">Pagamentos</span></button>
     <button type="button" class="tab-btn rail-item" data-tab="tab-consolidado"><span class="rail-icon">&#x1F4CA;</span><span class="rail-label">Consolidado</span></button>
     <button type="button" class="tab-btn rail-item" data-tab="tab-alertas"><span class="rail-icon">&#x1F514;</span><span class="rail-label">Alertas</span></button>
+    <button type="button" class="tab-btn rail-item so-admin" data-tab="tab-acessos" style="display:none;"><span class="rail-icon">&#x1F6E1;&#xFE0F;</span><span class="rail-label">Acessos</span><span class="rail-badge" id="badgeAcessos">0</span></button>
+    <button type="button" class="tab-btn rail-item so-admin" data-tab="tab-auditoria" style="display:none;"><span class="rail-icon">&#x1F50E;</span><span class="rail-label">Auditoria</span></button>
   </div>
 
   <div class="rail-divider"></div>
@@ -1107,7 +1154,7 @@
     <div class="rail-footer-tag">Tecnologia e Sistemas</div>
     <div class="rail-footer-div"></div>
     <div class="rail-footer-tagline"><strong>Inovação que conecta.</strong><br>Tecnologia que transforma.</div>
-    <div class="rail-footer-tagline" style="margin-top:8px;opacity:.4;">Versão 12/10/2026 · v3 (login)</div>
+    <div class="rail-footer-tagline" style="margin-top:8px;opacity:.4;">Versão 12/10/2026 · v4 (acessos + auditoria)</div>
   </div>
 </nav>
 <div id="railBackdrop"></div>
@@ -1389,6 +1436,61 @@
     <div class="btn-row">
       <button type="button" class="btn btn-clear" id="btnFecharAlertas">&#x2715; Fechar</button>
       <button type="button" class="btn-test-alerta" id="btnTestarAlerta">&#x1F514; Testar Alerta Agora</button>
+    </div>
+  </div>
+
+  <!-- ABA: ACESSOS (somente administrador) -->
+  <div class="tab-panel hidden" id="tab-acessos">
+    <h2 class="col-blue">&#x1F6E1;&#xFE0F; Acesso dos Supervisores</h2>
+    <p style="font-size:.8rem;color:var(--muted);margin:-6px 0 14px;line-height:1.45;">Aprove, recuse ou bloqueie quem pediu acesso ao sistema. Toda decisão fica registrada na aba Auditoria.</p>
+    <div class="adm-chips" id="acessosChips">
+      <button type="button" class="adm-chip on" data-f="todos">Todos <b>0</b></button>
+      <button type="button" class="adm-chip" data-f="pendente">&#x23F3; Pendentes <b>0</b></button>
+      <button type="button" class="adm-chip" data-f="aprovado">&#x2705; Aprovados <b>0</b></button>
+      <button type="button" class="adm-chip" data-f="bloqueado">&#x1F6AB; Bloqueados <b>0</b></button>
+    </div>
+    <input type="text" id="acessosBusca" class="adm-busca" placeholder="Buscar por nome, usuário ou matrícula…">
+    <div id="acessosLista"><p class="empty-state">Carregando…</p></div>
+  </div>
+
+  <!-- ABA: AUDITORIA (somente administrador) -->
+  <div class="tab-panel hidden" id="tab-auditoria">
+    <h2 class="col-amber">&#x1F50E; Auditoria do Sistema</h2>
+    <p style="font-size:.8rem;color:var(--muted);margin:-6px 0 14px;line-height:1.45;">Tudo que for adicionado, alterado ou excluído fica registrado aqui, com quem fez e quando. Os registros não podem ser editados nem apagados.</p>
+    <div class="form-card adm-filtros">
+      <select id="audAcao">
+        <option value="">&#x1F9FE; Todas as ações</option>
+        <option value="adicionou">&#x2795; Adicionou</option>
+        <option value="alterou">&#x270F;&#xFE0F; Alterou</option>
+        <option value="excluiu">&#x1F5D1;&#xFE0F; Excluiu</option>
+        <option value="acesso">&#x1F6E1;&#xFE0F; Decisões de acesso</option>
+      </select>
+      <select id="audEntidade">
+        <option value="">&#x1F4C2; Todos os tipos</option>
+        <option value="ft_lancamentos">Lançamento de FT</option>
+        <option value="ft_colaboradores">Colaborador</option>
+        <option value="ft_postos">Posto</option>
+        <option value="ft_motivos">Motivo</option>
+        <option value="ft_horarios_extra">Horário salvo</option>
+        <option value="ft_funcao_rotulo">Função (rótulo)</option>
+        <option value="ft_alertas_postos_v2">Posto monitorado (Alertas)</option>
+        <option value="ft_alertas_lembretes">Lembrete</option>
+        <option value="acesso">Acesso de supervisor</option>
+      </select>
+      <select id="audUsuario"><option value="">&#x1F464; Todos os usuários</option></select>
+      <select id="audPeriodo">
+        <option value="hoje">&#x1F4C5; Hoje</option>
+        <option value="7" selected>&#x1F4C5; Últimos 7 dias</option>
+        <option value="30">&#x1F4C5; Últimos 30 dias</option>
+        <option value="todos">&#x1F4C5; Tudo que foi carregado</option>
+      </select>
+      <input type="text" id="audBusca" placeholder="Buscar no registro…">
+    </div>
+    <div class="adm-resumo" id="audResumo">0 registro(s)</div>
+    <div id="audLista"><p class="empty-state">Carregando…</p></div>
+    <div class="btn-row" style="margin-top:14px;">
+      <button type="button" class="btn btn-clear" id="audMais" style="display:none;">&#x2B07;&#xFE0F; Carregar mais</button>
+      <button type="button" class="btn btn-submit" id="audExcel">&#x1F4E5; Exportar Excel</button>
     </div>
   </div>
 
@@ -1845,6 +1947,7 @@ var FTCloud = (function () {
       if (remoto === undefined) return;
       var atualLocal = localStorage.getItem(chave);
       var remotoStr = JSON.stringify(remoto);
+      if (window.FTAudit) FTAudit.definirBase(chave, remotoStr); // o que veio da nuvem vira o "antes" da auditoria
       if (atualLocal === remotoStr) return; // já está igual, nada a fazer
 
       aplicandoRemoto[chave] = true;
@@ -1889,6 +1992,7 @@ var FTCloud = (function () {
     if (!pronto || !db) return;
     if (CHAVES_SINCRONIZADAS.indexOf(chave) === -1) return;
     if (aplicandoRemoto[chave]) return; // não reenviar o que acabou de chegar da nuvem
+    if (window.FTAudit) { try { FTAudit.registrar(chave, data); } catch (e) { console.warn('Auditoria:', e); } }
     db.collection(COLECAO).doc(chave).set({
       data: data,
       atualizadoEm: firebase.firestore.FieldValue.serverTimestamp()
@@ -2133,6 +2237,8 @@ refreshTodosOsSelects();
       if (tabId === 'tab-consolidado' && typeof window.renderConsolidadoTab === 'function') window.renderConsolidadoTab();
       if (tabId === 'tab-alertas' && typeof window.renderAlertasTab === 'function') window.renderAlertasTab();
       if (tabId === 'tab-alertas' && typeof window.renderLembretesTab === 'function') window.renderLembretesTab();
+      if (tabId === 'tab-acessos' && window.FTAdmin) FTAdmin.abrirAcessos();
+      if (tabId === 'tab-auditoria' && window.FTAdmin) FTAdmin.abrirAuditoria();
       closeRail();
     });
   });
@@ -4342,7 +4448,7 @@ var LembretesModule = (function () {
   function persist(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch (e) {} }
 
   var lembretes = loadJSON(LS_LEMBRETES, []);
-  function saveLembretes() { persist(LS_LEMBRETES, lembretes); }
+  function saveLembretes() { if (window.FTAudit) { try { FTAudit.registrar(LS_LEMBRETES, lembretes); } catch (e) {} } persist(LS_LEMBRETES, lembretes); }
 
   function pad(n) { return String(n).padStart(2, '0'); }
   function fmtDataHoraBR(iso) {
@@ -4694,6 +4800,491 @@ var LembretesModule = (function () {
 
 <script>
 /* ════════════════════════════════════════════════════════════
+   MÓDULO — Auditoria + Validação de acessos (abas só para admin)
+   FTAudit: compara o antes/depois de cada gravação local e grava,
+            na coleção "auditoria", um registro por item adicionado,
+            alterado ou excluído (quem, quando, o quê). Só-criação:
+            as regras do Firestore impedem editar/apagar registros.
+   FTAdmin: aba "Acessos" (aprovar/recusar/bloquear supervisores)
+            e aba "Auditoria" (leitura dos registros).
+   ════════════════════════════════════════════════════════════ */
+var FTAudit = (function () {
+  'use strict';
+
+  var COL = 'auditoria';
+  var CHAVES = ['ft_postos', 'ft_colaboradores', 'ft_motivos', 'ft_lancamentos', 'ft_horarios_extra', 'ft_alertas_postos_v2', 'ft_funcao_rotulo', 'ft_alertas_lembretes'];
+  var ENT = {
+    ft_postos: 'Posto', ft_colaboradores: 'Colaborador', ft_motivos: 'Motivo',
+    ft_lancamentos: 'Lançamento de FT', ft_horarios_extra: 'Horário salvo',
+    ft_alertas_postos_v2: 'Posto monitorado (Alertas)', ft_funcao_rotulo: 'Função (rótulo)',
+    ft_alertas_lembretes: 'Lembrete', acesso: 'Acesso de supervisor'
+  };
+  var ROT = {
+    postoNome: 'Posto', substitutoNome: 'Quem foi', motivo: 'Motivo', observacao: 'Observação',
+    horario: 'Horário', valor: 'Valor (R$)', dataHora: 'Data/hora', pago: 'Pago',
+    colaboradorAusenteNome: 'Ausente', nome: 'Nome', servico: 'Serviço', nota: 'Nota',
+    concluido: 'Concluído', ativo: 'Ativo', ativoDia: 'Dia ativo', ativoNoite: 'Noite ativa', regra: 'Regra',
+    escalaDia: 'Entrada dia', escalaNoite: 'Entrada noite', escalaDiaFim: 'Saída dia', escalaNoiteFim: 'Saída noite'
+  };
+  var VAZIO = '__vazio__';
+  var base = {}, iniciado = false, avisou = false;
+
+  function parseArr(s) { try { var v = JSON.parse(s); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
+
+  function fmtVal(v) {
+    if (v === undefined || v === null || v === '') return '—';
+    if (v === true) return 'sim';
+    if (v === false) return 'não';
+    if (typeof v === 'object') return JSON.stringify(v);
+    return String(v);
+  }
+
+  function fmtDH(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso);
+    function p(n) { return String(n).padStart(2, '0'); }
+    return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+
+  function js(v) {
+    if (v === undefined) return '';
+    var s = typeof v === 'string' ? v : JSON.stringify(v);
+    return s.length > 3000 ? s.slice(0, 3000) + '…' : s;
+  }
+
+  function rotulo(k) {
+    var parts = k.split('.');
+    var head = ROT[parts[0]] || parts[0];
+    return parts.length > 1 ? head + ' (' + parts.slice(1).join('.') + ')' : head;
+  }
+
+  function flatten(o, p, out) {
+    out = out || {};
+    Object.keys(o || {}).forEach(function (k) {
+      var v = o[k], kk = p ? p + '.' + k : k;
+      if (v && typeof v === 'object' && !Array.isArray(v)) flatten(v, kk, out);
+      else out[kk] = Array.isArray(v) ? JSON.stringify(v) : v;
+    });
+    return out;
+  }
+
+  function vazio(v) { return v === undefined || v === null || v === ''; }
+
+  function difCampos(a, b) {
+    var fa = flatten(a), fb = flatten(b), ks = {}, out = [];
+    Object.keys(fa).concat(Object.keys(fb)).forEach(function (k) { ks[k] = 1; });
+    Object.keys(ks).forEach(function (k) {
+      if (/Id$/.test(k) || k === 'id' || k === 'criadoEm') return;
+      var va = fa[k], vb = fb[k];
+      if (va === vb) return;
+      if (vazio(va) && vazio(vb)) return;
+      /* campo que não existia e ganhou só o valor-padrão (ex.: estrutura completada pelo app) não é alteração do usuário */
+      if (va === undefined && (vb === true || vb === 'todos' || vb === '')) return;
+      out.push({ campo: rotulo(k), de: fmtVal(va), para: fmtVal(vb) });
+    });
+    return out;
+  }
+
+  function resumo(chave, it) {
+    if (typeof it === 'string') return it;
+    if (!it) return '';
+    if (chave === 'ft_lancamentos') {
+      var v = typeof it.valor === 'number' ? 'R$ ' + it.valor.toFixed(2).replace('.', ',') : '';
+      return [it.substitutoNome, it.postoNome, it.motivo, fmtDH(it.dataHora), v].filter(Boolean).join(' · ');
+    }
+    if (chave === 'ft_alertas_lembretes') return [it.servico, fmtDH(it.dataHora)].filter(Boolean).join(' · ');
+    return it.nome || it.servico || it.id || '(sem nome)';
+  }
+
+  function calcular(chave, antes, depois) {
+    var ev = [];
+
+    if (chave === 'ft_funcao_rotulo') {
+      var ra = antes[0], rb = depois[0];
+      if (ra !== rb) ev.push({ acao: 'alterou', itemId: 'rotulo', resumo: 'Rótulo selecionado', campos: [{ campo: 'Rótulo', de: fmtVal(ra), para: fmtVal(rb) }], antes: ra, depois: rb });
+      antes = antes.slice(1).filter(function (x) { return x !== VAZIO; });
+      depois = depois.slice(1).filter(function (x) { return x !== VAZIO; });
+    }
+
+    var objetos = antes.concat(depois).some(function (x) { return x && typeof x === 'object'; });
+
+    if (!objetos) {
+      depois.forEach(function (s) { if (antes.indexOf(s) === -1) ev.push({ acao: 'adicionou', itemId: s, resumo: String(s), depois: s }); });
+      antes.forEach(function (s) { if (depois.indexOf(s) === -1) ev.push({ acao: 'excluiu', itemId: s, resumo: String(s), antes: s }); });
+      return ev;
+    }
+
+    var ma = {}, mb = {};
+    function chaveItem(x) { return x && typeof x === 'object' ? (x.id || x.nome) : null; }
+    antes.forEach(function (x) { var k = chaveItem(x); if (k) ma[k] = x; });
+    depois.forEach(function (x) { var k = chaveItem(x); if (k) mb[k] = x; });
+
+    Object.keys(mb).forEach(function (k) {
+      if (!ma[k]) { ev.push({ acao: 'adicionou', itemId: k, resumo: resumo(chave, mb[k]), depois: mb[k] }); return; }
+      if (JSON.stringify(ma[k]) === JSON.stringify(mb[k])) return;
+      var c = difCampos(ma[k], mb[k]);
+      if (c.length) ev.push({ acao: 'alterou', itemId: k, resumo: resumo(chave, mb[k]), campos: c, antes: ma[k], depois: mb[k] });
+    });
+    Object.keys(ma).forEach(function (k) {
+      if (!mb[k]) ev.push({ acao: 'excluiu', itemId: k, resumo: resumo(chave, ma[k]), antes: ma[k] });
+    });
+    return ev;
+  }
+
+  function erro(err) {
+    console.error('Falha ao gravar auditoria:', err);
+    if (avisou) return;
+    avisou = true;
+    var c = (err && err.code) || 'erro';
+    if (typeof showToast === 'function') showToast('⚠️ A auditoria não foi gravada (' + c + '). Publique as regras do Firestore para a coleção "auditoria".', 'error');
+  }
+
+  function gravar(chave, eventos) {
+    var d = window.FTCloud && FTCloud.db();
+    var u = window.FT_USUARIO;
+    if (!d || !u || !eventos.length) return;
+    var agora = Date.now(), ent = ENT[chave] || chave;
+    for (var i = 0; i < eventos.length; i += 400) {
+      (function (inicio) {
+        var lote = d.batch();
+        eventos.slice(inicio, inicio + 400).forEach(function (e) {
+          lote.set(d.collection(COL).doc(), {
+            ts: firebase.firestore.FieldValue.serverTimestamp(),
+            tsMs: agora,
+            uid: u.uid || '',
+            usuarioNome: u.nome || '',
+            usuario: u.usuario || '',
+            role: u.role || '',
+            chave: chave,
+            entidade: ent,
+            acao: e.acao,
+            itemId: String(e.itemId || ''),
+            resumo: String(e.resumo || '').slice(0, 300),
+            campos: (e.campos || []).slice(0, 40),
+            antes: js(e.antes),
+            depois: js(e.depois)
+          });
+        });
+        lote.commit().catch(erro);
+      }(i));
+    }
+  }
+
+  /* Chamado pelo FTCloud.push (e pelos lembretes) a cada gravação LOCAL. */
+  function registrar(chave, data) {
+    if (CHAVES.indexOf(chave) === -1) return;
+    var novo = JSON.stringify(data === undefined ? [] : data);
+    var antes = base[chave];
+    base[chave] = novo;
+    if (antes === undefined || antes === novo) return;
+    gravar(chave, calcular(chave, parseArr(antes), parseArr(novo)));
+  }
+
+  /* Chamado pelo FTCloud quando chega dado de outro aparelho: vira o novo "antes". */
+  function definirBase(chave, str) { base[chave] = str; }
+
+  function iniciar() {
+    if (iniciado) return;
+    iniciado = true;
+    CHAVES.forEach(function (k) {
+      var s = null;
+      try { s = localStorage.getItem(k); } catch (e) {}
+      base[k] = s === null ? '[]' : s;
+    });
+  }
+
+  function gravarEvento(e) { gravar(e.chave || 'acesso', [e]); }
+
+  return { iniciar: iniciar, registrar: registrar, definirBase: definirBase, gravarEvento: gravarEvento, ENT: ENT, fmtVal: fmtVal };
+}());
+
+var FTAdmin = (function () {
+  'use strict';
+
+  var fs = null, ligado = false, primeiraCarga = true;
+  var usuarios = [], filtroAcesso = 'todos', buscaAcesso = '';
+  var audLista = [], audLimite = 300, unsubAud = null;
+  var STATUS = {
+    pendente: { rot: '⏳ Pendente', cls: 'pendente' },
+    aprovado: { rot: '✅ Aprovado', cls: 'aprovado' },
+    recusado: { rot: '❌ Recusado', cls: 'bloqueado' },
+    bloqueado: { rot: '🚫 Bloqueado', cls: 'bloqueado' }
+  };
+  var DECISAO = {
+    aprovar:  { status: 'aprovado',  verbo: 'aprovou',  toast: '✅ Acesso aprovado.' },
+    recusar:  { status: 'recusado',  verbo: 'recusou',  toast: '❌ Cadastro recusado.', titulo: 'Recusar cadastro', msg: 'Recusar o cadastro de', ok: 'Recusar' },
+    bloquear: { status: 'bloqueado', verbo: 'bloqueou', toast: '🚫 Acesso bloqueado.', titulo: 'Bloquear acesso', msg: 'Bloquear o acesso de', ok: 'Bloquear' },
+    reativar: { status: 'aprovado',  verbo: 'reativou', toast: '♻️ Acesso reativado.' }
+  };
+  var ACAO = {
+    adicionou: { ico: '➕', rot: 'Adicionou', cls: 'add' },
+    excluiu:   { ico: '🗑️', rot: 'Excluiu',   cls: 'del' },
+    alterou:   { ico: '✏️', rot: 'Alterou',   cls: 'alt' },
+    aprovou:   { ico: '✅', rot: 'Aprovou acesso',   cls: 'acc' },
+    recusou:   { ico: '❌', rot: 'Recusou cadastro', cls: 'acc' },
+    bloqueou:  { ico: '🚫', rot: 'Bloqueou acesso',  cls: 'acc' },
+    reativou:  { ico: '♻️', rot: 'Reativou acesso',  cls: 'acc' }
+  };
+
+  function $(id) { return document.getElementById(id); }
+  function ehAdmin() { var u = window.FT_USUARIO; return !!u && u.role === 'admin'; }
+  function p2(n) { return String(n).padStart(2, '0'); }
+  function fmtData(d) {
+    if (!d || isNaN(d.getTime())) return '—';
+    return p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes());
+  }
+  function fmtTs(ts) { return ts && typeof ts.toDate === 'function' ? fmtData(ts.toDate()) : '—'; }
+
+  /* ───────── ABA: ACESSOS ───────── */
+  function contar() {
+    var c = { pendente: 0, aprovado: 0, bloqueado: 0, todos: usuarios.length };
+    usuarios.forEach(function (u) {
+      if (u.status === 'pendente') c.pendente++;
+      else if (u.status === 'aprovado') c.aprovado++;
+      else c.bloqueado++;
+    });
+    return c;
+  }
+
+  function atualizarBadge() {
+    var b = $('badgeAcessos'); if (!b) return;
+    var n = contar().pendente;
+    b.textContent = n; b.style.display = n ? 'inline-block' : 'none';
+  }
+
+  function renderAcessos() {
+    var box = $('acessosLista'); if (!box) return;
+    var c = contar();
+    document.querySelectorAll('#acessosChips .adm-chip').forEach(function (ch) {
+      var f = ch.getAttribute('data-f');
+      ch.classList.toggle('on', f === filtroAcesso);
+      ch.querySelector('b').textContent = c[f];
+    });
+
+    var q = buscaAcesso.trim().toLowerCase();
+    var lista = usuarios.filter(function (u) {
+      if (filtroAcesso === 'pendente' && u.status !== 'pendente') return false;
+      if (filtroAcesso === 'aprovado' && u.status !== 'aprovado') return false;
+      if (filtroAcesso === 'bloqueado' && (u.status === 'pendente' || u.status === 'aprovado')) return false;
+      if (q && (String(u.nome || '') + ' ' + String(u.usuario || '') + ' ' + String(u.matricula || '')).toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    }).sort(function (a, b) {
+      var pa = a.status === 'pendente' ? 0 : 1, pb = b.status === 'pendente' ? 0 : 1;
+      if (pa !== pb) return pa - pb;
+      return String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR');
+    });
+
+    if (!lista.length) { box.innerHTML = '<p class="empty-state">Nenhum cadastro nesta visão.</p>'; return; }
+
+    var meuUid = (window.FT_USUARIO || {}).uid;
+    box.innerHTML = lista.map(function (u) {
+      var st = STATUS[u.status] || { rot: String(u.status || '—'), cls: 'bloqueado' };
+      var admin = u.role === 'admin';
+      var botoes = '';
+      if (!admin && u.uid !== meuUid) {
+        if (u.status === 'pendente') botoes = '<button type="button" class="adm-btn ok" data-uid="' + escHtml(u.uid) + '" data-acao="aprovar">✅ Aprovar</button><button type="button" class="adm-btn no" data-uid="' + escHtml(u.uid) + '" data-acao="recusar">❌ Recusar</button>';
+        else if (u.status === 'aprovado') botoes = '<button type="button" class="adm-btn no" data-uid="' + escHtml(u.uid) + '" data-acao="bloquear">🚫 Bloquear</button>';
+        else if (u.status === 'recusado') botoes = '<button type="button" class="adm-btn ok" data-uid="' + escHtml(u.uid) + '" data-acao="aprovar">✅ Aprovar</button>';
+        else botoes = '<button type="button" class="adm-btn ok" data-uid="' + escHtml(u.uid) + '" data-acao="reativar">♻️ Reativar</button>';
+      }
+      var decidido = u.decididoPor ? '<div class="adm-linha">Última decisão: <b>' + escHtml(u.decididoPor) + '</b> em ' + fmtTs(u.decididoEm) + '</div>' : '';
+      return '<div class="adm-card ' + st.cls + '">' +
+        '<div class="adm-card-top"><div class="adm-nome">' + escHtml(u.nome || '(sem nome)') + '</div>' +
+        '<span class="adm-pill ' + st.cls + '">' + st.rot + '</span></div>' +
+        '<div class="adm-linha">Usuário: <b>' + escHtml(u.usuario || '—') + '</b> · Matrícula: <b>' + escHtml(u.matricula || '—') + '</b>' + (admin ? ' · <span class="adm-pill admin">Administrador</span>' : '') + '</div>' +
+        '<div class="adm-linha">Solicitado em ' + fmtTs(u.criadoEm) + '</div>' + decidido +
+        (botoes ? '<div class="adm-acoes">' + botoes + '</div>' : '') + '</div>';
+    }).join('');
+  }
+
+  async function decidir(uid, acao) {
+    var u = usuarios.filter(function (x) { return x.uid === uid; })[0];
+    var m = DECISAO[acao];
+    var eu = window.FT_USUARIO;
+    if (!u || !m || !eu || u.role === 'admin' || uid === eu.uid) return;
+    if (m.titulo && !(await pjConfirm({ titulo: m.titulo, mensagem: m.msg + '?', destaque: u.nome || u.usuario || '', ok: m.ok, tipo: 'perigo' }))) return;
+    try {
+      await fs.collection('usuarios').doc(uid).update({
+        status: m.status,
+        decididoPor: eu.nome || eu.usuario || '',
+        decididoPorUid: eu.uid,
+        decididoEm: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      FTAudit.gravarEvento({
+        chave: 'acesso', acao: m.verbo, itemId: uid,
+        resumo: (u.nome || '') + ' (' + (u.usuario || '') + ')',
+        campos: [{ campo: 'Status', de: String(u.status || '—'), para: m.status }],
+        antes: { status: u.status }, depois: { status: m.status }
+      });
+      showToast(m.toast, 'success');
+    } catch (e) {
+      showToast('🔴 Não foi possível atualizar o acesso (' + ((e && e.code) || 'erro') + ').', 'error');
+    }
+  }
+
+  function iniciarUsuarios() {
+    fs.collection('usuarios').onSnapshot(function (snap) {
+      if (!primeiraCarga) {
+        snap.docChanges().forEach(function (ch) {
+          var d = ch.doc.data();
+          if (ch.type === 'added' && d.status === 'pendente' && !ch.doc.metadata.hasPendingWrites) showToast('🆕 Novo supervisor aguardando aprovação: ' + (d.nome || ''), 'success');
+        });
+      }
+      usuarios = snap.docs.map(function (d) { var x = d.data(); x.uid = d.id; return x; });
+      if (primeiraCarga) {
+        primeiraCarga = false;
+        var n = contar().pendente;
+        if (n) showToast('🛡️ ' + n + ' supervisor(es) aguardando aprovação na aba Acessos.', 'success');
+      }
+      renderAcessos(); atualizarBadge();
+    }, function (err) {
+      var box = $('acessosLista');
+      if (box) box.innerHTML = '<p class="empty-state">Não foi possível ler os cadastros (' + escHtml((err && err.code) || 'erro') + '). Verifique as regras do Firestore para a coleção "usuarios".</p>';
+    });
+  }
+
+  /* ───────── ABA: AUDITORIA ───────── */
+  function iniciarAud() {
+    if (unsubAud) { try { unsubAud(); } catch (e) {} unsubAud = null; }
+    unsubAud = fs.collection('auditoria').orderBy('tsMs', 'desc').limit(audLimite).onSnapshot(function (snap) {
+      audLista = snap.docs.map(function (d) { var x = d.data(); x.id = d.id; return x; });
+      $('audMais').style.display = snap.size >= audLimite ? '' : 'none';
+      popularUsuariosAud(); renderAud();
+    }, function (err) {
+      $('audLista').innerHTML = '<p class="empty-state">Não foi possível ler a auditoria (' + escHtml((err && err.code) || 'erro') + '). Publique as regras do Firestore para a coleção "auditoria".</p>';
+    });
+  }
+
+  function popularUsuariosAud() {
+    var sel = $('audUsuario'), atual = sel.value, vistos = {}, opts = '<option value="">👤 Todos os usuários</option>';
+    audLista.forEach(function (r) {
+      if (!r.uid || vistos[r.uid]) return;
+      vistos[r.uid] = 1;
+      opts += '<option value="' + escHtml(r.uid) + '">' + escHtml(r.usuarioNome || r.usuario || r.uid) + '</option>';
+    });
+    sel.innerHTML = opts;
+    sel.value = atual;
+  }
+
+  function filtrarAud() {
+    var acao = $('audAcao').value, ent = $('audEntidade').value, usr = $('audUsuario').value, per = $('audPeriodo').value;
+    var q = $('audBusca').value.trim().toLowerCase();
+    var corte = 0;
+    if (per === 'hoje') { var h = new Date(); h.setHours(0, 0, 0, 0); corte = h.getTime(); }
+    else if (per !== 'todos') corte = Date.now() - parseInt(per, 10) * 86400000;
+    return audLista.filter(function (r) {
+      if (acao) {
+        if (acao === 'acesso') { if (['aprovou', 'recusou', 'bloqueou', 'reativou'].indexOf(r.acao) === -1) return false; }
+        else if (r.acao !== acao) return false;
+      }
+      if (ent && r.chave !== ent) return false;
+      if (usr && r.uid !== usr) return false;
+      if (corte && (r.tsMs || 0) < corte) return false;
+      if (q && (String(r.resumo || '') + ' ' + String(r.usuarioNome || '') + ' ' + String(r.entidade || '') + ' ' + (r.campos || []).map(function (c) { return c.campo + ' ' + c.de + ' ' + c.para; }).join(' ')).toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+  }
+
+  function detalhes(r) {
+    var h = '';
+    if (r.campos && r.campos.length) {
+      h += r.campos.map(function (c) {
+        return '<div class="adm-det-linha"><span class="adm-det-k">' + escHtml(c.campo) + '</span><span class="adm-det-de">' + escHtml(c.de) + '</span><span class="adm-det-seta">→</span><span class="adm-det-para">' + escHtml(c.para) + '</span></div>';
+      }).join('');
+    }
+    var snap = r.acao === 'excluiu' ? r.antes : (r.acao === 'adicionou' ? r.depois : '');
+    if (snap) {
+      var obj = null;
+      try { obj = JSON.parse(snap); } catch (e) {}
+      if (obj && typeof obj === 'object') {
+        var linhas = [];
+        Object.keys(obj).forEach(function (k) {
+          var v = obj[k];
+          if (v === '' || v === null || v === undefined) return;
+          if (typeof v === 'object') v = JSON.stringify(v);
+          linhas.push('<div class="adm-det-linha"><span class="adm-det-k">' + escHtml(k) + '</span><span class="adm-det-para">' + escHtml(FTAudit.fmtVal(v)) + '</span></div>');
+        });
+        h += '<div class="adm-det-sub">' + (r.acao === 'excluiu' ? 'Conteúdo excluído' : 'Conteúdo adicionado') + '</div>' + linhas.join('');
+      } else {
+        h += '<div class="adm-det-linha"><span class="adm-det-para">' + escHtml(snap) + '</span></div>';
+      }
+    }
+    return h || '<div class="adm-det-linha"><span class="adm-det-k">Sem detalhes adicionais.</span></div>';
+  }
+
+  function renderAud() {
+    var box = $('audLista'); if (!box) return;
+    var lista = filtrarAud();
+    $('audResumo').textContent = lista.length + ' registro(s)' + (lista.length !== audLista.length ? ' de ' + audLista.length + ' carregados' : '');
+    if (!lista.length) { box.innerHTML = '<p class="empty-state">Nenhum registro encontrado com esses filtros.</p>'; return; }
+    box.innerHTML = lista.map(function (r) {
+      var a = ACAO[r.acao] || { ico: '•', rot: String(r.acao || ''), cls: 'alt' };
+      return '<div class="adm-aud-card ' + a.cls + '">' +
+        '<div class="adm-card-top"><span class="adm-pill aud-' + a.cls + '">' + a.ico + ' ' + a.rot + '</span><span class="adm-data">' + fmtData(new Date(r.tsMs || 0)) + '</span></div>' +
+        '<div class="adm-aud-titulo"><b>' + escHtml(r.entidade || '') + '</b>' + (r.resumo ? ' — ' + escHtml(r.resumo) : '') + '</div>' +
+        '<div class="adm-linha">👤 <b>' + escHtml(r.usuarioNome || r.usuario || '—') + '</b> · ' + (r.role === 'admin' ? 'Administrador' : 'Supervisor') + '</div>' +
+        '<details class="adm-det"><summary>Ver detalhes</summary>' + detalhes(r) + '</details></div>';
+    }).join('');
+  }
+
+  function exportarExcel() {
+    if (typeof XLSX === 'undefined') { showToast('⚠️ Biblioteca de Excel não carregou. Verifique a internet.', 'error'); return; }
+    var lista = filtrarAud();
+    if (!lista.length) { showToast('⚠️ Nada para exportar com esses filtros.', 'error'); return; }
+    var linhas = lista.map(function (r) {
+      return {
+        'Data/hora': fmtData(new Date(r.tsMs || 0)),
+        'Usuário': r.usuarioNome || '',
+        'Login': r.usuario || '',
+        'Perfil': r.role === 'admin' ? 'Administrador' : 'Supervisor',
+        'Ação': (ACAO[r.acao] || {}).rot || r.acao || '',
+        'Tipo': r.entidade || '',
+        'Item': r.resumo || '',
+        'Alterações': (r.campos || []).map(function (c) { return c.campo + ': ' + c.de + ' → ' + c.para; }).join(' | ')
+      };
+    });
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(linhas), 'Auditoria');
+    var d = new Date();
+    XLSX.writeFile(wb, 'auditoria-ft-' + d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + '.xlsx');
+  }
+
+  /* ───────── ligação ───────── */
+  function ligarEventos() {
+    $('acessosChips').addEventListener('click', function (e) {
+      var b = e.target.closest('.adm-chip'); if (!b) return;
+      filtroAcesso = b.getAttribute('data-f'); renderAcessos();
+    });
+    $('acessosBusca').addEventListener('input', function () { buscaAcesso = this.value; renderAcessos(); });
+    $('acessosLista').addEventListener('click', function (e) {
+      var b = e.target.closest('.adm-btn'); if (!b) return;
+      decidir(b.getAttribute('data-uid'), b.getAttribute('data-acao'));
+    });
+    ['audAcao', 'audEntidade', 'audUsuario', 'audPeriodo'].forEach(function (id) { $(id).addEventListener('change', renderAud); });
+    $('audBusca').addEventListener('input', renderAud);
+    $('audMais').addEventListener('click', function () { audLimite += 300; iniciarAud(); });
+    $('audExcel').addEventListener('click', exportarExcel);
+  }
+
+  function aoLiberar() {
+    if (ligado || !ehAdmin()) return;
+    ligado = true;
+    fs = FTCloud.db();
+    document.querySelectorAll('.so-admin').forEach(function (b) { b.style.display = ''; });
+    ligarEventos();
+    iniciarUsuarios();
+  }
+
+  function abrirAcessos() { if (ehAdmin()) renderAcessos(); }
+  function abrirAuditoria() { if (!ehAdmin() || !fs) return; if (!unsubAud) iniciarAud(); else renderAud(); }
+
+  return { aoLiberar: aoLiberar, abrirAcessos: abrirAcessos, abrirAuditoria: abrirAuditoria };
+}());
+</script>
+
+<script>
+/* ════════════════════════════════════════════════════════════
    MÓDULO — Login (Firebase Authentication)
    Fluxo: Entrar | Primeiro acesso (usuário gerado de nome+matrícula,
    senha provisória aleatória) -> aguardando aprovação do admin ->
@@ -4956,6 +5547,8 @@ var FTAuth = (function () {
 
   function liberar(p) {
     esconderOverlay();
+    if (window.FTAudit) FTAudit.iniciar();
+    if (window.FTAdmin) FTAdmin.aoLiberar();
     var info = $('railUsuarioInfo'), btn = $('btnSair');
     if (info) { info.innerHTML = '<strong></strong>' + (p.role === 'admin' ? 'Administrador' : 'Supervisor'); info.firstChild.textContent = p.nome || p.usuario || ''; info.style.display = 'block'; }
     if (btn) btn.style.display = '';
