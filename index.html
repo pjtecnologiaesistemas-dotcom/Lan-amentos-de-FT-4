@@ -1456,40 +1456,40 @@
   <!-- ABA: AUDITORIA (somente administrador) -->
   <div class="tab-panel hidden" id="tab-auditoria">
     <h2 class="col-amber">&#x1F50E; Auditoria do Sistema</h2>
-    <p style="font-size:.8rem;color:var(--muted);margin:-6px 0 14px;line-height:1.45;">Tudo que for adicionado, alterado ou excluído fica registrado aqui, com quem fez e quando. Os registros não podem ser editados nem apagados.</p>
+    <p style="font-size:.8rem;color:var(--muted);margin:-6px 0 14px;line-height:1.45;">Aqui você vê, em ordem, o que cada pessoa fez no sistema: quem cadastrou, mudou ou excluiu alguma coisa, e quando. Esses registros não podem ser editados nem apagados.</p>
     <div class="form-card adm-filtros">
       <select id="audAcao">
-        <option value="">&#x1F9FE; Todas as ações</option>
-        <option value="adicionou">&#x2795; Adicionou</option>
-        <option value="alterou">&#x270F;&#xFE0F; Alterou</option>
-        <option value="excluiu">&#x1F5D1;&#xFE0F; Excluiu</option>
-        <option value="acesso">&#x1F6E1;&#xFE0F; Decisões de acesso</option>
+        <option value="">&#x1F9FE; Tudo que aconteceu</option>
+        <option value="adicionou">&#x2795; Coisas novas</option>
+        <option value="alterou">&#x270F;&#xFE0F; Alterações</option>
+        <option value="excluiu">&#x1F5D1;&#xFE0F; Exclusões</option>
+        <option value="acesso">&#x1F6E1;&#xFE0F; Liberação de acessos</option>
       </select>
       <select id="audEntidade">
-        <option value="">&#x1F4C2; Todos os tipos</option>
-        <option value="ft_lancamentos">Lançamento de FT</option>
-        <option value="ft_colaboradores">Colaborador</option>
-        <option value="ft_postos">Posto</option>
-        <option value="ft_motivos">Motivo</option>
-        <option value="ft_horarios_extra">Horário salvo</option>
-        <option value="ft_funcao_rotulo">Função (rótulo)</option>
-        <option value="ft_alertas_postos_v2">Posto monitorado (Alertas)</option>
-        <option value="ft_alertas_lembretes">Lembrete</option>
-        <option value="acesso">Acesso de supervisor</option>
+        <option value="">&#x1F4C2; Todos os assuntos</option>
+        <option value="ft_lancamentos">FTs lançadas</option>
+        <option value="ft_colaboradores">Colaboradores</option>
+        <option value="ft_postos">Postos</option>
+        <option value="ft_motivos">Motivos</option>
+        <option value="ft_horarios_extra">Horários salvos</option>
+        <option value="ft_funcao_rotulo">Função de quem está indo</option>
+        <option value="ft_alertas_postos_v2">Postos monitorados (Alertas)</option>
+        <option value="ft_alertas_lembretes">Lembretes</option>
+        <option value="acesso">Acessos de supervisores</option>
       </select>
-      <select id="audUsuario"><option value="">&#x1F464; Todos os usuários</option></select>
+      <select id="audUsuario"><option value="">&#x1F464; Todas as pessoas</option></select>
       <select id="audPeriodo">
         <option value="hoje">&#x1F4C5; Hoje</option>
         <option value="7" selected>&#x1F4C5; Últimos 7 dias</option>
         <option value="30">&#x1F4C5; Últimos 30 dias</option>
         <option value="todos">&#x1F4C5; Tudo que foi carregado</option>
       </select>
-      <input type="text" id="audBusca" placeholder="Buscar no registro…">
+      <input type="text" id="audBusca" placeholder="Buscar por pessoa, nome, posto…">
     </div>
     <div class="adm-resumo" id="audResumo">0 registro(s)</div>
     <div id="audLista"><p class="empty-state">Carregando…</p></div>
     <div class="btn-row" style="margin-top:14px;">
-      <button type="button" class="btn btn-clear" id="audMais" style="display:none;">&#x2B07;&#xFE0F; Carregar mais</button>
+      <button type="button" class="btn btn-clear" id="audMais" style="display:none;">&#x2B07;&#xFE0F; Ver registros mais antigos</button>
       <button type="button" class="btn btn-submit" id="audExcel">&#x1F4E5; Exportar Excel</button>
     </div>
   </div>
@@ -4937,7 +4937,7 @@ var FTAudit = (function () {
     if (avisou) return;
     avisou = true;
     var c = (err && err.code) || 'erro';
-    if (typeof showToast === 'function') showToast('⚠️ A auditoria não foi gravada (' + c + '). Publique as regras do Firestore para a coleção "auditoria".', 'error');
+    if (typeof showToast === 'function') showToast('⚠️ Não consegui gravar o histórico de auditoria (' + c + '). Publique as regras do Firestore para a coleção "auditoria".', 'error');
   }
 
   function gravar(chave, eventos) {
@@ -5018,13 +5018,13 @@ var FTAdmin = (function () {
     reativar: { status: 'aprovado',  verbo: 'reativou', toast: '♻️ Acesso reativado.' }
   };
   var ACAO = {
-    adicionou: { ico: '➕', rot: 'Adicionou', cls: 'add' },
-    excluiu:   { ico: '🗑️', rot: 'Excluiu',   cls: 'del' },
-    alterou:   { ico: '✏️', rot: 'Alterou',   cls: 'alt' },
-    aprovou:   { ico: '✅', rot: 'Aprovou acesso',   cls: 'acc' },
-    recusou:   { ico: '❌', rot: 'Recusou cadastro', cls: 'acc' },
-    bloqueou:  { ico: '🚫', rot: 'Bloqueou acesso',  cls: 'acc' },
-    reativou:  { ico: '♻️', rot: 'Reativou acesso',  cls: 'acc' }
+    adicionou: { ico: '➕', rot: 'Novo', cls: 'add' },
+    excluiu:   { ico: '🗑️', rot: 'Excluído', cls: 'del' },
+    alterou:   { ico: '✏️', rot: 'Alterado', cls: 'alt' },
+    aprovou:   { ico: '✅', rot: 'Acesso liberado',   cls: 'acc' },
+    recusou:   { ico: '❌', rot: 'Cadastro recusado', cls: 'acc' },
+    bloqueou:  { ico: '🚫', rot: 'Acesso bloqueado',  cls: 'acc' },
+    reativou:  { ico: '♻️', rot: 'Acesso reativado',  cls: 'acc' }
   };
 
   function $(id) { return document.getElementById(id); }
@@ -5157,7 +5157,7 @@ var FTAdmin = (function () {
   }
 
   function popularUsuariosAud() {
-    var sel = $('audUsuario'), atual = sel.value, vistos = {}, opts = '<option value="">👤 Todos os usuários</option>';
+    var sel = $('audUsuario'), atual = sel.value, vistos = {}, opts = '<option value="">👤 Todas as pessoas</option>';
     audLista.forEach(function (r) {
       if (!r.uid || vistos[r.uid]) return;
       vistos[r.uid] = 1;
@@ -5181,50 +5181,138 @@ var FTAdmin = (function () {
       if (ent && r.chave !== ent) return false;
       if (usr && r.uid !== usr) return false;
       if (corte && (r.tsMs || 0) < corte) return false;
-      if (q && (String(r.resumo || '') + ' ' + String(r.usuarioNome || '') + ' ' + String(r.entidade || '') + ' ' + (r.campos || []).map(function (c) { return c.campo + ' ' + c.de + ' ' + c.para; }).join(' ')).toLowerCase().indexOf(q) === -1) return false;
+      if (q && (nomePessoa(r) + ' ' + textoPuro(frase(r).t) + ' ' + String(r.resumo || '') + ' ' + String(frase(r).sub || '')).toLowerCase().indexOf(q) === -1) return false;
       return true;
     });
   }
 
-  function detalhes(r) {
-    var h = '';
-    if (r.campos && r.campos.length) {
-      h += r.campos.map(function (c) {
-        return '<div class="adm-det-linha"><span class="adm-det-k">' + escHtml(c.campo) + '</span><span class="adm-det-de">' + escHtml(c.de) + '</span><span class="adm-det-seta">→</span><span class="adm-det-para">' + escHtml(c.para) + '</span></div>';
-      }).join('');
-    }
-    var snap = r.acao === 'excluiu' ? r.antes : (r.acao === 'adicionou' ? r.depois : '');
-    if (snap) {
-      var obj = null;
-      try { obj = JSON.parse(snap); } catch (e) {}
-      if (obj && typeof obj === 'object') {
-        var linhas = [];
-        Object.keys(obj).forEach(function (k) {
-          var v = obj[k];
-          if (v === '' || v === null || v === undefined) return;
-          if (typeof v === 'object') v = JSON.stringify(v);
-          linhas.push('<div class="adm-det-linha"><span class="adm-det-k">' + escHtml(k) + '</span><span class="adm-det-para">' + escHtml(FTAudit.fmtVal(v)) + '</span></div>');
-        });
-        h += '<div class="adm-det-sub">' + (r.acao === 'excluiu' ? 'Conteúdo excluído' : 'Conteúdo adicionado') + '</div>' + linhas.join('');
-      } else {
-        h += '<div class="adm-det-linha"><span class="adm-det-para">' + escHtml(snap) + '</span></div>';
-      }
-    }
-    return h || '<div class="adm-det-linha"><span class="adm-det-k">Sem detalhes adicionais.</span></div>';
+  /* ───────── linguagem humana ───────── */
+  function jp(s) { try { var v = JSON.parse(s); return v && typeof v === 'object' ? v : null; } catch (e) { return null; } }
+  function reais(n) { return typeof n === 'number' && !isNaN(n) ? 'R$ ' + n.toFixed(2).replace('.', ',') : String(n); }
+  function dh(iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return String(iso);
+    return p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + '/' + d.getFullYear() + ' às ' + p2(d.getHours()) + ':' + p2(d.getMinutes());
   }
+  function quando(ms) {
+    var d = new Date(ms || 0);
+    if (isNaN(d.getTime()) || !ms) return '—';
+    var hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+    var dia = new Date(d.getTime()); dia.setHours(0, 0, 0, 0);
+    var hora = p2(d.getHours()) + ':' + p2(d.getMinutes());
+    var diff = Math.round((hoje.getTime() - dia.getTime()) / 86400000);
+    if (diff === 0) return 'Hoje às ' + hora;
+    if (diff === 1) return 'Ontem às ' + hora;
+    return p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + '/' + d.getFullYear() + ' às ' + hora;
+  }
+  function hc(campo) {
+    if (campo === 'Valor (R$)') return 'Valor';
+    if (campo === 'Pago') return 'Pagamento';
+    if (campo === 'Data/hora') return 'Data e hora';
+    return campo;
+  }
+  function hv(campo, v) {
+    if (v === '—' || v === '' || v === null || v === undefined) return '(vazio)';
+    if (campo === 'Valor (R$)') { var n = parseFloat(v); return isNaN(n) ? v : reais(n); }
+    if (campo === 'Pago') return v === 'sim' ? 'Pago' : (v === 'não' ? 'Pendente' : v);
+    if (campo === 'Data/hora') return dh(v);
+    return v;
+  }
+  function b(s) { return '<b>' + escHtml(s) + '</b>'; }
+
+  function descLanc(o) {
+    var p = [];
+    if (o.postoNome) p.push('Posto: ' + o.postoNome);
+    if (o.motivo) p.push('Motivo: ' + o.motivo);
+    if (o.dataHora) p.push(dh(o.dataHora));
+    if (typeof o.valor === 'number') p.push(reais(o.valor));
+    return p.join(' · ');
+  }
+
+  /* Monta a frase do registro: { t: "o que a pessoa fez", sub: "contexto", mud: [{campo,de,para}] } */
+  function frase(r) {
+    var o = jp(r.depois) || jp(r.antes) || {};
+    var c = r.chave, a = r.acao, campos = r.campos || [], t = '', sub = '';
+    var n = o.nome || o.servico || r.resumo || '';
+    var mudSo = function (rot) { return campos.length === 1 && campos[0].campo === rot ? campos[0] : null; };
+
+    if (c === 'ft_lancamentos') {
+      var quem = o.substitutoNome ? b(o.substitutoNome) : '';
+      var de = quem ? ' de ' + quem : '';
+      if (a === 'adicionou') t = 'registrou uma nova FT' + (quem ? ' para ' + quem : '');
+      else if (a === 'excluiu') t = 'excluiu a FT' + de;
+      else {
+        var pg = mudSo('Pago');
+        if (pg) { t = (pg.para === 'sim' ? 'marcou como <b>paga</b> a FT' : 'voltou para <b>pendente</b> a FT') + de; campos = []; }
+        else t = 'alterou a FT' + de;
+      }
+      sub = descLanc(o);
+    } else if (c === 'ft_colaboradores' || c === 'ft_postos' || c === 'ft_motivos') {
+      var obj = c === 'ft_colaboradores' ? 'o colaborador' : (c === 'ft_postos' ? 'o posto' : 'o motivo');
+      var nm = mudSo('Nome');
+      if (a === 'adicionou') t = 'cadastrou ' + obj + ' ' + b(n);
+      else if (a === 'excluiu') t = 'excluiu ' + obj + ' ' + b(n);
+      else if (nm) { t = 'trocou o nome ' + (c === 'ft_colaboradores' ? 'do colaborador' : (c === 'ft_postos' ? 'do posto' : 'do motivo')) + ' ' + b(nm.de) + ' para ' + b(nm.para); campos = []; }
+      else t = 'alterou ' + obj + ' ' + b(n);
+    } else if (c === 'ft_horarios_extra') {
+      t = a === 'adicionou' ? 'salvou o horário ' + b(n) : 'removeu o horário salvo ' + b(n);
+    } else if (c === 'ft_funcao_rotulo') {
+      if (a === 'alterou') { var rt = campos[0] || {}; t = 'trocou a função exibida em "Quem está indo" de ' + b(hv('', rt.de)) + ' para ' + b(hv('', rt.para)); campos = []; }
+      else t = (a === 'adicionou' ? 'adicionou' : 'removeu') + ' a opção de função ' + b(n);
+    } else if (c === 'ft_alertas_postos_v2') {
+      if (a === 'adicionou') t = 'passou a monitorar o posto ' + b(n) + ' nos Alertas';
+      else if (a === 'excluiu') t = 'parou de monitorar o posto ' + b(n) + ' nos Alertas';
+      else t = 'mudou a configuração do posto ' + b(n) + ' nos Alertas';
+    } else if (c === 'ft_alertas_lembretes') {
+      var cn = mudSo('Concluído');
+      if (a === 'adicionou') t = 'criou o lembrete ' + b(n);
+      else if (a === 'excluiu') t = 'excluiu o lembrete ' + b(n);
+      else if (cn && cn.para === 'sim') { t = 'concluiu o lembrete ' + b(n); campos = []; }
+      else t = 'alterou o lembrete ' + b(n);
+      if (o.dataHora) sub = 'Para ' + dh(o.dataHora);
+    } else if (c === 'acesso') {
+      var vb = { aprovou: 'liberou o acesso de', recusou: 'recusou o cadastro de', bloqueou: 'bloqueou o acesso de', reativou: 'reativou o acesso de' };
+      t = (vb[a] || 'mexeu no acesso de') + ' ' + b(n);
+      campos = [];
+    } else {
+      t = (a === 'adicionou' ? 'adicionou' : (a === 'excluiu' ? 'excluiu' : 'alterou')) + ' ' + b(n);
+    }
+
+    var mud = campos.map(function (x) { return { campo: hc(x.campo), de: hv(x.campo, x.de), para: hv(x.campo, x.para) }; });
+    return { t: t, sub: sub, mud: mud };
+  }
+
+  function mudLinha(x) {
+    var txt;
+    if (x.de === '(vazio)') txt = 'preenchido com <span class="adm-det-para">' + escHtml(x.para) + '</span>';
+    else if (x.para === '(vazio)') txt = 'apagado (antes era <span class="adm-det-de">' + escHtml(x.de) + '</span>)';
+    else txt = 'de <span class="adm-det-de">' + escHtml(x.de) + '</span> para <span class="adm-det-para">' + escHtml(x.para) + '</span>';
+    return '<div class="adm-det-linha"><span class="adm-det-k">' + escHtml(x.campo) + ':</span> ' + txt + '</div>';
+  }
+
+  function textoPuro(html) { var d = document.createElement('div'); d.innerHTML = html; return d.textContent || ''; }
+  function nomePessoa(r) { return r.usuarioNome || r.usuario || 'Alguém'; }
+  function perfilTxt(r) { return r.role === 'admin' ? 'Administrador' : 'Supervisor'; }
 
   function renderAud() {
     var box = $('audLista'); if (!box) return;
     var lista = filtrarAud();
-    $('audResumo').textContent = lista.length + ' registro(s)' + (lista.length !== audLista.length ? ' de ' + audLista.length + ' carregados' : '');
-    if (!lista.length) { box.innerHTML = '<p class="empty-state">Nenhum registro encontrado com esses filtros.</p>'; return; }
+    $('audResumo').textContent = lista.length === audLista.length
+      ? lista.length + (lista.length === 1 ? ' registro' : ' registros')
+      : 'Mostrando ' + lista.length + ' de ' + audLista.length + ' registros carregados';
+    if (!lista.length) { box.innerHTML = '<p class="empty-state">Nada registrado com esses filtros.</p>'; return; }
     box.innerHTML = lista.map(function (r) {
       var a = ACAO[r.acao] || { ico: '•', rot: String(r.acao || ''), cls: 'alt' };
-      return '<div class="adm-aud-card ' + a.cls + '">' +
-        '<div class="adm-card-top"><span class="adm-pill aud-' + a.cls + '">' + a.ico + ' ' + a.rot + '</span><span class="adm-data">' + fmtData(new Date(r.tsMs || 0)) + '</span></div>' +
-        '<div class="adm-aud-titulo"><b>' + escHtml(r.entidade || '') + '</b>' + (r.resumo ? ' — ' + escHtml(r.resumo) : '') + '</div>' +
-        '<div class="adm-linha">👤 <b>' + escHtml(r.usuarioNome || r.usuario || '—') + '</b> · ' + (r.role === 'admin' ? 'Administrador' : 'Supervisor') + '</div>' +
-        '<details class="adm-det"><summary>Ver detalhes</summary>' + detalhes(r) + '</details></div>';
+      var f = frase(r);
+      var visiveis = f.mud.slice(0, 5), resto = f.mud.slice(5);
+      var h = '<div class="adm-aud-card ' + a.cls + '">' +
+        '<div class="adm-card-top"><span class="adm-pill aud-' + a.cls + '">' + a.ico + ' ' + a.rot + '</span>' +
+        '<span class="adm-data">' + escHtml(quando(r.tsMs)) + ' · ' + perfilTxt(r) + '</span></div>' +
+        '<div class="adm-aud-titulo">' + b(nomePessoa(r)) + ' ' + f.t + '</div>';
+      if (f.sub) h += '<div class="adm-linha">' + escHtml(f.sub) + '</div>';
+      h += visiveis.map(mudLinha).join('');
+      if (resto.length) h += '<details class="adm-det"><summary>Ver mais ' + resto.length + ' alteração(ões)</summary>' + resto.map(mudLinha).join('') + '</details>';
+      return h + '</div>';
     }).join('');
   }
 
@@ -5233,15 +5321,14 @@ var FTAdmin = (function () {
     var lista = filtrarAud();
     if (!lista.length) { showToast('⚠️ Nada para exportar com esses filtros.', 'error'); return; }
     var linhas = lista.map(function (r) {
+      var f = frase(r);
+      var det = [f.sub].concat(f.mud.map(function (x) { return x.campo + ': de ' + x.de + ' para ' + x.para; })).filter(Boolean).join(' | ');
       return {
-        'Data/hora': fmtData(new Date(r.tsMs || 0)),
-        'Usuário': r.usuarioNome || '',
-        'Login': r.usuario || '',
-        'Perfil': r.role === 'admin' ? 'Administrador' : 'Supervisor',
-        'Ação': (ACAO[r.acao] || {}).rot || r.acao || '',
-        'Tipo': r.entidade || '',
-        'Item': r.resumo || '',
-        'Alterações': (r.campos || []).map(function (c) { return c.campo + ': ' + c.de + ' → ' + c.para; }).join(' | ')
+        'Quando': quando(r.tsMs),
+        'Quem': nomePessoa(r),
+        'Perfil': perfilTxt(r),
+        'O que aconteceu': nomePessoa(r) + ' ' + textoPuro(f.t),
+        'Detalhes': det
       };
     });
     var wb = XLSX.utils.book_new();
@@ -5279,7 +5366,7 @@ var FTAdmin = (function () {
   function abrirAcessos() { if (ehAdmin()) renderAcessos(); }
   function abrirAuditoria() { if (!ehAdmin() || !fs) return; if (!unsubAud) iniciarAud(); else renderAud(); }
 
-  return { aoLiberar: aoLiberar, abrirAcessos: abrirAcessos, abrirAuditoria: abrirAuditoria };
+  return { _frase: frase, aoLiberar: aoLiberar, abrirAcessos: abrirAcessos, abrirAuditoria: abrirAuditoria };
 }());
 </script>
 
