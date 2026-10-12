@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ft-pj-cache-v9';
+const CACHE_NAME = 'ft-pj-cache-v10';
 const APP_SHELL = [
   './',
   './index.html',
@@ -71,3 +71,36 @@ self.addEventListener('fetch', function (event) {
     })
   );
 });
+y) { return caches.delete(key); })
+      );
+    }).then(function () {
+      return self.clients.claim();
+    })
+  );
+});
+
+self.addEventListener('fetch', function (event) {
+  const req = event.request;
+
+  if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) {
+    return;
+  }
+
+  if (req.mode === 'navigate' || req.destination === 'document') {
+    event.respondWith(
+      fetch(req)
+        .then(function (res) {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then(function (cache) { cache.put(req, clone); });
+          return res;
+        })
+        .catch(function () { return caches.match(req).then(function (r) { return r || caches.match('./index.html'); }); })
+    );
+    return;
+  }
+
+  event.respondWith(
+    caches.match(req).then(function (cached) {
+      return cached || fetch(req).then(function (res) {
+        const clone = res.clone();
+        caches.open(
