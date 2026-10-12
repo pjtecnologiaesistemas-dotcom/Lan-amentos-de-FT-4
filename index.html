@@ -903,6 +903,7 @@
     <div class="rail-footer-tag">Tecnologia e Sistemas</div>
     <div class="rail-footer-div"></div>
     <div class="rail-footer-tagline"><strong>Inovação que conecta.</strong><br>Tecnologia que transforma.</div>
+    <div class="rail-footer-tagline" style="margin-top:8px;opacity:.4;">Versão 12/10/2026 · funções editáveis</div>
   </div>
 </nav>
 <div id="railBackdrop"></div>
@@ -4474,7 +4475,4 @@ ateLabel();
   }
 
   document.addEventListener('click', function (e) {
-    if (e.target.closest('.cs-wrap')) return;
-    document.querySelectorAll('.cs-wrap.cs-open').forEach(function (w) {
-      w.classList.remove('cs-open');
- 
+    if (e.target.closest('.cs-wrap')
