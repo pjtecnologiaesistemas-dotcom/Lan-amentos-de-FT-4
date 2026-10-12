@@ -1448,9 +1448,10 @@ function sortAlpha(arr) { return arr.slice().sort(function (a, b) { return a.nom
       elInput.value = input ? (o.valor || '') : '';
       btnOk.textContent = o.ok || (tipo === 'perigo' ? 'Remover' : 'OK');
       btnCancel.textContent = o.cancelar || 'Cancelar';
+      btnCancel.style.display = o.semCancelar ? 'none' : '';
       ov.classList.add('show'); ov.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
-      setTimeout(function () { (input ? elInput : btnCancel).focus(); if (input) elInput.select(); }, 60);
+      setTimeout(function () { (input ? elInput : (o.semCancelar ? btnOk : btnCancel)).focus(); if (input) elInput.select(); }, 60);
     });
   }
 
@@ -1488,6 +1489,34 @@ function loadStorage(key) {
 function saveStorage(key, data) {
   try { localStorage.setItem(key, JSON.stringify(data)); } catch (e) {}
   if (window.FTCloud) window.FTCloud.push(key, data);
+}
+
+/* ════════════════════════════════════════════════════════════
+   Anti-duplicidade de FT: mesmo colaborador + mesmo posto + mesmo dia
+   ════════════════════════════════════════════════════════════ */
+function ftBuscarDuplicado(substitutoId, postoId, dataHora, ignorarId) {
+  var dia = String(dataHora || '').slice(0, 10);
+  if (!substitutoId || !postoId || !dia) return null;
+  var lista = loadStorage('ft_lancamentos');
+  for (var i = 0; i < lista.length; i++) {
+    var f = lista[i];
+    if (ignorarId && f.id === ignorarId) continue;
+    if (f.substitutoId === substitutoId && f.postoId === postoId && String(f.dataHora || '').slice(0, 10) === dia) return f;
+  }
+  return null;
+}
+function ftAvisarDuplicado(dup) {
+  var d = String(dup.dataHora || '');
+  var dataBR = d.slice(8, 10) + '/' + d.slice(5, 7) + '/' + d.slice(0, 4) + (d.length >= 16 ? ' às ' + d.slice(11, 16) : '');
+  return pjConfirm({
+    titulo: 'FT já lançada',
+    icone: '⚠️',
+    tipo: 'perigo',
+    semCancelar: true,
+    ok: 'Entendi',
+    mensagem: 'Já existe uma FT deste colaborador neste posto no mesmo dia (' + dataBR + (dup.horario ? ', ' + dup.horario : '') + '). Não é possível lançar duas vezes.',
+    destaque: (dup.substitutoNome || 'Colaborador') + ' — ' + (dup.postoNome || 'Posto')
+  });
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -1974,6 +2003,9 @@ refreshTodosOsSelects();
       showToast('⚠️ Informe o ' + regraAusente.label.toLowerCase() + '.', 'error');
       return;
     }
+
+    var dup = ftBuscarDuplicado(substitutoId, postoId, dataHoraVal, null);
+    if (dup) { ftAvisarDuplicado(dup); return; }
 
     var entry = {
       id: gerarId(),
@@ -3141,6 +3173,9 @@ refreshTodosOsSelects();
         showToast('⚠️ Informe o ' + regraAusente.label.toLowerCase() + '.', 'error');
         return;
       }
+
+      var dupEdit = ftBuscarDuplicado(substitutoId, postoId, dataHoraVal, idAtual);
+      if (dupEdit) { ftAvisarDuplicado(dupEdit); return; }
 
       var arrFt = loadStorage('ft_lancamentos');
       var idxFt = arrFt.findIndex(function (x) { return x.id === idAtual; });
@@ -4387,4 +4422,7 @@ ateLabel();
   });
 
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Esc
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.cs-wrap.cs-open').forEach(function (w) {
+        w.classList.remove('cs-open');
+        var t = w.querySelector('.c
