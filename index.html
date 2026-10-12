@@ -1491,6 +1491,21 @@ function saveStorage(key, data) {
   if (window.FTCloud) window.FTCloud.push(key, data);
 }
 
+/* Defesa: remove qualquer texto solto que apareça direto no <body>
+   (sobra de um arquivo antigo mais comprido quando o editor não
+   apaga o final ao salvar por cima). Não mexe em nenhum elemento do app. */
+(function limparTextoSolto() {
+  function limpar() {
+    Array.prototype.slice.call(document.body.childNodes).forEach(function (n) {
+      if (n.nodeType === 3 && n.nodeValue.trim()) n.parentNode.removeChild(n);
+    });
+  }
+  limpar();
+  document.addEventListener('DOMContentLoaded', limpar);
+  window.addEventListener('load', limpar);
+  new MutationObserver(limpar).observe(document.body, { childList: true });
+}());
+
 /* ════════════════════════════════════════════════════════════
    Anti-duplicidade de FT: mesmo colaborador + mesmo posto + mesmo dia
    ════════════════════════════════════════════════════════════ */
@@ -4408,21 +4423,4 @@ ateLabel();
   }
 
   function enhanceAll() {
-    document.querySelectorAll('select').forEach(enhance);
-  }
-
-  document.addEventListener('click', function (e) {
-    if (e.target.closest('.cs-wrap')) return;
-    document.querySelectorAll('.cs-wrap.cs-open').forEach(function (w) {
-      w.classList.remove('cs-open');
-      var t = w.querySelector('.cs-trigger'), p = w.querySelector('.cs-panel');
-      if (t) t.classList.remove('open');
-      if (p) p.classList.remove('open');
-    });
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') {
-      document.querySelectorAll('.cs-wrap.cs-open').forEach(function (w) {
-        w.classList.remove('cs-open');
-        var t = w.querySelector('.c
+    document.querySelectorAll('select').forEach(e
