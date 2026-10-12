@@ -2847,12 +2847,13 @@ refreshTodosOsSelects();
       });
     }
 
+    /* Último lançamento feito aparece primeiro; empate: data/hora da FT mais recente. */
     registros.sort(function (a, b) {
+      var ca = chaveCriacao(a), cb = chaveCriacao(b);
+      if (cb !== ca) return cb - ca;
       var da = a.dataObj ? a.dataObj.getTime() : 0;
       var db = b.dataObj ? b.dataObj.getTime() : 0;
-      if (db !== da) return db - da;
-      /* Mesma data: quem foi lançado por último fica por último. */
-      return chaveCriacao(a) - chaveCriacao(b);
+      return db - da;
     });
 
     return registros;
@@ -3181,12 +3182,13 @@ refreshTodosOsSelects();
       registros = registros.filter(function (r) { return r.dataObj && !isNaN(r.dataObj.getTime()) && r.dataObj >= range.start && r.dataObj <= range.end; });
     }
 
+    /* Último lançamento feito aparece primeiro; empate: data/hora da FT mais recente. */
     registros.sort(function (a, b) {
+      var ca = chaveCriacao(a), cb = chaveCriacao(b);
+      if (cb !== ca) return cb - ca;
       var da = a.dataObj ? a.dataObj.getTime() : 0;
       var db = b.dataObj ? b.dataObj.getTime() : 0;
-      if (db !== da) return db - da;
-      /* Mesma data: quem foi lançado por último fica por último. */
-      return chaveCriacao(a) - chaveCriacao(b);
+      return db - da;
     });
 
     registrosAtuais = registros;
