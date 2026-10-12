@@ -903,7 +903,7 @@
     <div class="rail-footer-tag">Tecnologia e Sistemas</div>
     <div class="rail-footer-div"></div>
     <div class="rail-footer-tagline"><strong>Inovação que conecta.</strong><br>Tecnologia que transforma.</div>
-    <div class="rail-footer-tagline" style="margin-top:8px;opacity:.4;">Versão 12/10/2026 · funções editáveis</div>
+    <div class="rail-footer-tagline" style="margin-top:8px;opacity:.4;">Versão 12/10/2026 · v2</div>
   </div>
 </nav>
 <div id="railBackdrop"></div>
@@ -1556,7 +1556,7 @@ var FTCloud = (function () {
   };
 
   var COLECAO = 'ft_app_data';
-  var CHAVES_SINCRONIZADAS = ['ft_postos', 'ft_colaboradores', 'ft_motivos', 'ft_lancamentos', 'ft_horarios_extra', 'ft_alertas_postos_v2', 'ft_funcao_rotulo', 'ft_funcao_opcoes'];
+  var CHAVES_SINCRONIZADAS = ['ft_postos', 'ft_colaboradores', 'ft_motivos', 'ft_lancamentos', 'ft_horarios_extra', 'ft_alertas_postos_v2', 'ft_funcao_rotulo'];
 
   var db = null;
   var pronto = false;
@@ -1654,7 +1654,7 @@ var FTCloud = (function () {
       refreshMotivoSelect();
       if (typeof window.renderCadastroMotivos === 'function') window.renderCadastroMotivos();
     }
-    if ((chave === 'ft_funcao_rotulo' || chave === 'ft_funcao_opcoes') && typeof window.aplicarRotuloFuncao === 'function') window.aplicarRotuloFuncao();
+    if (chave === 'ft_funcao_rotulo' && typeof window.aplicarRotuloFuncao === 'function') window.aplicarRotuloFuncao();
     if (chave === 'ft_alertas_postos_v2' && window.AlertasModule && typeof window.AlertasModule.aplicarRemoto === 'function') {
       window.AlertasModule.aplicarRemoto(valor);
     }
@@ -1763,7 +1763,10 @@ refreshTodosOsSelects();
    ser adicionadas; tudo sincroniza com a nuvem.
    ════════════════════════════════════════════════════════════ */
 (function () {
-  var CHAVE = 'ft_funcao_rotulo', CHAVE_OP = 'ft_funcao_opcoes', PADRAO = 'Porteiro/Colaborador';
+  /* Tudo fica no documento já existente 'ft_funcao_rotulo' (o único que o
+     Firestore deste projeto já aceita): [rotuloAtivo, opcao1, opcao2, ...].
+     Documento antigo, só com o rótulo, usa as opções iniciais. */
+  var CHAVE = 'ft_funcao_rotulo', PADRAO = 'Porteiro/Colaborador';
   var OPCOES_INICIAIS = ['Vigilante', 'Controlador de Acesso'], VAZIO = '__vazio__';
   var box = document.getElementById('funcaoChips');
   var input = document.getElementById('inputFuncaoNova');
@@ -1771,18 +1774,23 @@ refreshTodosOsSelects();
 
   function iguais(a, b) { return String(a).trim().toLowerCase() === String(b).trim().toLowerCase(); }
 
+  function lerTudo() { var v = loadStorage(CHAVE); return Array.isArray(v) ? v : []; }
+
   function opcoes() {
-    var v = loadStorage(CHAVE_OP);
-    if (!Array.isArray(v) || !v.length) return OPCOES_INICIAIS.slice();
-    if (v[0] === VAZIO) return [];
-    return v.filter(function (x) { return typeof x === 'string' && x.trim(); });
+    var v = lerTudo();
+    if (v.length < 2) return OPCOES_INICIAIS.slice();
+    if (v[1] === VAZIO) return [];
+    return v.slice(1).filter(function (x) { return typeof x === 'string' && x.trim(); });
   }
-  function salvarOpcoes(lista) { saveStorage(CHAVE_OP, lista.length ? lista : [VAZIO]); }
 
   function atual() {
-    var v = loadStorage(CHAVE);
-    var t = Array.isArray(v) && typeof v[0] === 'string' ? v[0].trim() : '';
+    var v = lerTudo();
+    var t = typeof v[0] === 'string' ? v[0].trim() : '';
     return t || PADRAO;
+  }
+
+  function gravar(rotulo, lista) {
+    saveStorage(CHAVE, [rotulo].concat(lista.length ? lista : [VAZIO]));
   }
 
   function render() {
@@ -1809,7 +1817,7 @@ refreshTodosOsSelects();
     var lista = opcoes();
     if (lista.some(function (o) { return iguais(o, nome); })) { showToast('⚠️ Essa opção já existe.', 'error'); return; }
     lista.push(nome);
-    salvarOpcoes(lista);
+    gravar(atual(), lista);
     input.value = '';
     render();
     showToast('✅ Opção adicionada: ' + nome, 'success');
@@ -1818,8 +1826,7 @@ refreshTodosOsSelects();
   async function remover(valor) {
     if (!(await pjConfirm({ titulo: 'Excluir opção', mensagem: 'Deseja excluir a opção', destaque: valor + '?', ok: 'Excluir' }))) return;
     var restante = opcoes().filter(function (o) { return !iguais(o, valor); });
-    salvarOpcoes(restante);
-    if (iguais(atual(), valor)) saveStorage(CHAVE, [restante[0] || PADRAO]);
+    gravar(iguais(atual(), valor) ? (restante[0] || PADRAO) : atual(), restante);
     aplicar();
     showToast('🗑️ Opção excluída.', 'success');
   }
@@ -1829,7 +1836,7 @@ refreshTodosOsSelects();
     if (del) { remover(del.dataset.v); return; }
     var chip = e.target.closest('.chip-funcao');
     if (chip) {
-      saveStorage(CHAVE, [chip.dataset.v]);
+      gravar(chip.dataset.v, opcoes());
       aplicar();
       showToast('✅ Função atualizada: ' + chip.dataset.v, 'success');
     }
@@ -4470,9 +4477,4 @@ var LembretesModule = (function () {
 ateLabel();
   }
 
-  function enhanceAll() {
-    document.querySelectorAll('select').forEach(enhance);
-  }
-
-  document.addEventListener('click', function (e) {
-    if (e.target.closest('.cs-wrap')
+  function enhanc
