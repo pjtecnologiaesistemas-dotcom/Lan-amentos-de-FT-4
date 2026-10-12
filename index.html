@@ -23,6 +23,7 @@
 <!-- ── Firebase (sincronização em nuvem) ── -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700;800&family=Nunito:wght@400;500;600&family=Orbitron:wght@700;900&family=Rajdhani:wght@300;400;600&display=swap');
@@ -868,9 +869,207 @@
     .hist-edit-btn, .hist-delete-btn, .icon-toggle-btn, .btn-edit-item, .btn-remove, .pag-status-toggle,
     .btn-test-alerta, .btn-modal-ok, .floating-alert-actions button { transition: none; }
   }
+
+  /* ═══════════ LOGIN / AUTENTICAÇÃO ═══════════ */
+  body.auth-ativo { overflow: hidden; }
+  #authOverlay {
+    position: fixed; inset: 0; z-index: 10000; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,212,255,.14) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 90% 90%, rgba(47,123,255,.14) 0%, transparent 60%);
+  }
+  .auth-hide { display: none !important; }
+  .auth-wrap { width: 100%; max-width: 400px; margin: auto; padding: 8px 0; }
+  .auth-brand { text-align: center; margin-bottom: 18px; }
+  .auth-brand img { width: 96px; height: 96px; border-radius: 22px; box-shadow: 0 10px 34px rgba(0,212,255,.22); }
+  .auth-brand h1 { font-family: 'Orbitron', sans-serif; font-size: 1.05rem; letter-spacing: .06em; margin-top: 12px; color: var(--text); }
+  .auth-brand h1 span { color: var(--accent1); }
+  .auth-brand p { font-size: .8rem; color: var(--muted); margin-top: 4px; }
+  .auth-card {
+    background: linear-gradient(180deg, var(--card), var(--surface));
+    border: 1px solid var(--border); border-radius: 18px; padding: 20px 18px; box-shadow: var(--shadow);
+  }
+  .auth-tela.auth-hide { display: none; }
+  .auth-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 14px; padding: 4px; margin-bottom: 18px; }
+  .auth-tab { min-height: 44px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font: 700 .9rem 'Exo 2', sans-serif; cursor: pointer; }
+  .auth-tab.ativa { background: linear-gradient(180deg, rgba(0,212,255,.30), rgba(0,212,255,.10)); color: var(--accent1); box-shadow: inset 0 0 0 1px rgba(0,212,255,.5); }
+  .auth-tab:focus-visible, .auth-btn:focus-visible, .auth-link:focus-visible, .auth-olho:focus-visible { outline: 2px solid var(--accent1); outline-offset: 2px; }
+  .auth-titulo { font: 800 1.05rem 'Exo 2', sans-serif; margin-bottom: 6px; }
+  .auth-sub { font-size: .86rem; color: var(--muted); line-height: 1.45; margin-bottom: 16px; }
+  .auth-campo { margin-bottom: 14px; }
+  .auth-campo label { display: block; font: 700 .78rem 'Exo 2', sans-serif; color: var(--accent3); margin-bottom: 6px; letter-spacing: .03em; }
+  .auth-input-wrap { position: relative; }
+  #authOverlay input[type=text], #authOverlay input[type=password], #authOverlay input[type=search] {
+    width: 100%; min-height: 48px; padding: 12px 14px; font-size: 16px; font-family: 'Nunito', sans-serif;
+    color: var(--text); background: var(--input-bg); border: 1.5px solid var(--border); border-radius: 12px; outline: none;
+  }
+  #authOverlay input:focus { border-color: var(--accent1); box-shadow: 0 0 0 3px rgba(0,212,255,.18); }
+  #authOverlay input.com-olho { padding-right: 52px; }
+  .auth-olho { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border: 0; background: transparent; color: var(--muted); font-size: 1.15rem; cursor: pointer; border-radius: 10px; }
+  .auth-btn {
+    width: 100%; min-height: 50px; border: 0; border-radius: 13px; cursor: pointer; margin-top: 4px;
+    font: 800 1rem 'Exo 2', sans-serif; letter-spacing: .02em; color: #021019;
+    background: linear-gradient(135deg, var(--accent1), #2f7bff);
+    box-shadow: 0 6px 20px rgba(0,212,255,.25);
+  }
+  .auth-btn:disabled { opacity: .55; cursor: default; }
+  .auth-btn.sec { background: transparent; color: var(--text); border: 1.5px solid var(--border); box-shadow: none; margin-top: 10px; }
+  .auth-link { display: block; width: 100%; margin-top: 12px; padding: 12px; background: none; border: 0; color: var(--muted); font: 600 .85rem 'Nunito', sans-serif; cursor: pointer; text-align: center; }
+  .auth-erro { display: none; margin-bottom: 14px; padding: 11px 13px; border-radius: 12px; font-size: .85rem; line-height: 1.4; color: #ffd5d8; background: rgba(252,92,101,.14); border: 1px solid rgba(252,92,101,.5); }
+  .auth-erro.on { display: block; }
+  .auth-ok { padding: 11px 13px; border-radius: 12px; font-size: .85rem; line-height: 1.4; color: #c9f7de; background: rgba(38,222,129,.12); border: 1px solid rgba(38,222,129,.45); margin-bottom: 14px; }
+  .auth-aviso { padding: 11px 13px; border-radius: 12px; font-size: .84rem; line-height: 1.45; color: #ffe2c2; background: rgba(253,150,68,.12); border: 1px solid rgba(253,150,68,.45); margin-bottom: 14px; }
+  .auth-cred { background: var(--input-bg); border: 1.5px dashed var(--accent1); border-radius: 14px; padding: 14px; margin-bottom: 14px; }
+  .auth-cred div { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 6px 0; }
+  .auth-cred span { font-size: .75rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+  .auth-cred strong { font: 700 1.1rem 'Courier New', monospace; color: var(--accent1); word-break: break-all; text-align: right; user-select: all; }
+  .auth-previa { font-size: .8rem; color: var(--muted); margin: -6px 0 14px; min-height: 1.1em; }
+  .auth-previa b { color: var(--accent1); font-family: 'Courier New', monospace; }
+  .auth-spin { width: 38px; height: 38px; margin: 24px auto; border: 4px solid var(--border); border-top-color: var(--accent1); border-radius: 50%; animation: authGira .8s linear infinite; }
+  @keyframes authGira { to { transform: rotate(360deg); } }
+  .auth-centro { text-align: center; }
+  .auth-icone { font-size: 2.6rem; margin: 4px 0 10px; }
+  #railUsuarioInfo { display: none; margin: 10px 14px 0; font-size: .75rem; color: var(--muted); line-height: 1.35; word-break: break-word; }
+  #railUsuarioInfo strong { color: var(--text); display: block; }
+  @media (prefers-reduced-motion: reduce) { .auth-spin { animation-duration: 2s; } }
 </style>
 </head>
 <body>
+
+<!-- ═══════════ TELA DE LOGIN ═══════════ -->
+<div id="authOverlay" role="dialog" aria-modal="true" aria-label="Acesso ao sistema">
+  <div class="auth-wrap">
+    <div class="auth-brand">
+      <img data-pj-logo alt="PJ FT" width="96" height="96">
+      <h1>Nova Folga Trabalhada <span>FT</span></h1>
+      <p>PJ Tecnologia e Sistemas</p>
+    </div>
+
+    <div class="auth-card">
+
+      <!-- Carregando -->
+      <section class="auth-tela auth-centro" id="authTela-carregando">
+        <div class="auth-spin" aria-hidden="true"></div>
+        <p class="auth-sub" id="authCarregandoTxt">Verificando acesso…</p>
+      </section>
+
+      <!-- Entrar / Primeiro acesso -->
+      <section class="auth-tela auth-hide" id="authTela-login">
+        <div class="auth-tabs" role="tablist">
+          <button type="button" class="auth-tab ativa" id="authTabEntrar" role="tab" aria-selected="true">Entrar</button>
+          <button type="button" class="auth-tab" id="authTabPrimeiro" role="tab" aria-selected="false">Primeiro acesso</button>
+        </div>
+
+        <form id="authFormEntrar" novalidate>
+          <div class="auth-erro" id="authErroEntrar" role="alert"></div>
+          <div class="auth-campo">
+            <label for="authUsuario">USUÁRIO</label>
+            <input type="text" id="authUsuario" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="ex.: joao.silva1234">
+          </div>
+          <div class="auth-campo">
+            <label for="authSenha">SENHA</label>
+            <div class="auth-input-wrap">
+              <input type="password" id="authSenha" class="com-olho" autocomplete="current-password" placeholder="Sua senha">
+              <button type="button" class="auth-olho" data-olho="authSenha" aria-label="Mostrar senha">&#x1F441;</button>
+            </div>
+          </div>
+          <button type="submit" class="auth-btn" id="authBtnEntrar">Entrar</button>
+        </form>
+
+        <form id="authFormPrimeiro" class="auth-hide" novalidate>
+          <p class="auth-sub">Informe seu nome completo e matrícula. O sistema cria seu usuário e uma senha provisória. O acesso só é liberado depois que o administrador aprovar.</p>
+          <div class="auth-erro" id="authErroPrimeiro" role="alert"></div>
+          <div class="auth-campo">
+            <label for="authNome">NOME COMPLETO</label>
+            <input type="text" id="authNome" autocomplete="name" autocapitalize="words" placeholder="Ex.: João da Silva" maxlength="80">
+          </div>
+          <div class="auth-campo">
+            <label for="authMatricula">MATRÍCULA</label>
+            <input type="text" id="authMatricula" inputmode="numeric" autocomplete="off" placeholder="Ex.: 1234" maxlength="20">
+          </div>
+          <div class="auth-previa" id="authPrevia"></div>
+          <button type="submit" class="auth-btn" id="authBtnPrimeiro">Criar meu acesso</button>
+        </form>
+      </section>
+
+      <!-- Credenciais geradas (mostradas uma única vez) -->
+      <section class="auth-tela auth-hide" id="authTela-cred">
+        <div class="auth-titulo">Anote seu acesso</div>
+        <p class="auth-sub">Esta senha aparece só agora. Anote ou copie antes de continuar.</p>
+        <div class="auth-cred">
+          <div><span>Usuário</span><strong id="authCredUsuario"></strong></div>
+          <div><span>Senha</span><strong id="authCredSenha"></strong></div>
+        </div>
+        <div class="auth-aviso">Seu acesso ainda precisa ser aprovado pelo administrador. Depois da aprovação, você troca a senha provisória no primeiro login.</div>
+        <button type="button" class="auth-btn sec" id="authBtnCopiar">Copiar usuário e senha</button>
+        <button type="button" class="auth-btn" id="authBtnAnotei">Anotei, continuar</button>
+      </section>
+
+      <!-- Aguardando aprovação -->
+      <section class="auth-tela auth-hide auth-centro" id="authTela-pend">
+        <div class="auth-icone">&#x23F3;</div>
+        <div class="auth-titulo">Aguardando aprovação</div>
+        <p class="auth-sub">Olá, <b id="authPendNome"></b>. Seu cadastro foi enviado. Assim que o administrador aprovar, esta tela libera sozinha.</p>
+        <button type="button" class="auth-btn sec" data-auth-sair>Sair</button>
+      </section>
+
+      <!-- Bloqueado / recusado -->
+      <section class="auth-tela auth-hide auth-centro" id="authTela-bloq">
+        <div class="auth-icone">&#x26D4;</div>
+        <div class="auth-titulo">Acesso não liberado</div>
+        <p class="auth-sub" id="authBloqTxt">Seu acesso foi recusado ou bloqueado. Fale com o administrador.</p>
+        <button type="button" class="auth-btn sec" data-auth-sair>Sair</button>
+      </section>
+
+      <!-- Troca obrigatória de senha -->
+      <section class="auth-tela auth-hide" id="authTela-troca">
+        <div class="auth-titulo">Crie sua senha</div>
+        <p class="auth-sub">Acesso aprovado. Troque a senha provisória por uma só sua (mínimo 8 caracteres).</p>
+        <form id="authFormTroca" novalidate>
+          <div class="auth-erro" id="authErroTroca" role="alert"></div>
+          <input type="text" id="authTrocaUser" autocomplete="username" tabindex="-1" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
+          <div class="auth-campo">
+            <label for="authSenhaAtual">SENHA PROVISÓRIA</label>
+            <div class="auth-input-wrap">
+              <input type="password" id="authSenhaAtual" class="com-olho" autocomplete="current-password">
+              <button type="button" class="auth-olho" data-olho="authSenhaAtual" aria-label="Mostrar senha">&#x1F441;</button>
+            </div>
+          </div>
+          <div class="auth-campo">
+            <label for="authSenhaNova">NOVA SENHA</label>
+            <div class="auth-input-wrap">
+              <input type="password" id="authSenhaNova" class="com-olho" autocomplete="new-password">
+              <button type="button" class="auth-olho" data-olho="authSenhaNova" aria-label="Mostrar senha">&#x1F441;</button>
+            </div>
+          </div>
+          <div class="auth-campo">
+            <label for="authSenhaConf">REPITA A NOVA SENHA</label>
+            <div class="auth-input-wrap">
+              <input type="password" id="authSenhaConf" class="com-olho" autocomplete="new-password">
+              <button type="button" class="auth-olho" data-olho="authSenhaConf" aria-label="Mostrar senha">&#x1F441;</button>
+            </div>
+          </div>
+          <button type="submit" class="auth-btn" id="authBtnTroca">Salvar nova senha</button>
+        </form>
+        <button type="button" class="auth-link" data-auth-sair>Sair</button>
+      </section>
+
+      <!-- Erro geral -->
+      <section class="auth-tela auth-hide auth-centro" id="authTela-erro">
+        <div class="auth-icone">&#x26A0;&#xFE0F;</div>
+        <div class="auth-titulo">Não foi possível entrar</div>
+        <p class="auth-sub" id="authErroGeralTxt"></p>
+        <button type="button" class="auth-btn" id="authBtnRecarregar">Tentar de novo</button>
+        <button type="button" class="auth-link" data-auth-sair>Sair</button>
+      </section>
+
+    </div>
+  </div>
+</div>
+
 
 <header id="main-header">
   <h1>
@@ -897,13 +1096,18 @@
     <span class="rail-icon">&#x2B07;&#xFE0F;</span><span class="rail-label">Instalar App</span>
   </button>
 
+  <div id="railUsuarioInfo"></div>
+  <button type="button" id="btnSair" class="rail-item" style="display:none; margin:6px 10px 0; width:calc(100% - 20px); --i:8;">
+    <span class="rail-icon">&#x1F6AA;</span><span class="rail-label">Sair</span>
+  </button>
+
   <div class="rail-footer-logo">
     <div class="rail-footer-hex"><img data-pj-logo alt="PJ FT" style="width:72px;height:72px;border-radius:14px;"></div>
     <div class="rail-footer-brand"><span>PJ</span> Controle de Acesso</div>
     <div class="rail-footer-tag">Tecnologia e Sistemas</div>
     <div class="rail-footer-div"></div>
     <div class="rail-footer-tagline"><strong>Inovação que conecta.</strong><br>Tecnologia que transforma.</div>
-    <div class="rail-footer-tagline" style="margin-top:8px;opacity:.4;">Versão 12/10/2026 · v2</div>
+    <div class="rail-footer-tagline" style="margin-top:8px;opacity:.4;">Versão 12/10/2026 · v3 (login)</div>
   </div>
 </nav>
 <div id="railBackdrop"></div>
@@ -1587,12 +1791,28 @@ var FTCloud = (function () {
     if (typeof showToast === 'function') showToast(msg, 'error');
   }
 
-  function iniciar() {
-    if (typeof firebase === 'undefined') { console.warn('Firebase SDK não carregou.'); marcarStatus('erro', '🔴 SDK da nuvem não carregou'); return; }
+  /* Cria o app Firebase e o Firestore (uma única vez) SEM iniciar a sincronização.
+     A sincronização só começa em iniciar(), chamado pelo módulo de login
+     depois que o usuário é aprovado. */
+  function garantirApp() {
+    if (typeof firebase === 'undefined') return false;
+    if (db) return true;
     try {
-      firebase.initializeApp(firebaseConfig);
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();
       db.enablePersistence({ synchronizeTabs: true }).catch(function (e) { console.warn('Cache offline avançado indisponível:', e.code); });
+      return true;
+    } catch (e) {
+      console.error('Falha ao criar o app Firebase:', e);
+      return false;
+    }
+  }
+
+  function iniciar() {
+    if (pronto) return;
+    if (typeof firebase === 'undefined') { console.warn('Firebase SDK não carregou.'); marcarStatus('erro', '🔴 SDK da nuvem não carregou'); return; }
+    try {
+      if (!garantirApp()) throw new Error('app indisponível');
       pronto = true;
       CHAVES_SINCRONIZADAS.forEach(escutarChave);
     } catch (e) {
@@ -1680,9 +1900,9 @@ var FTCloud = (function () {
     });
   }
 
-  iniciar();
+  garantirApp();
 
-  return { push: push };
+  return { push: push, iniciar: iniciar, garantirApp: garantirApp, db: function () { return db; } };
 }());
 
 function fillSelect(id, items, comPlaceholder) {
@@ -4469,6 +4689,311 @@ var LembretesModule = (function () {
 
   enhanceAll();
   new MutationObserver(enhanceAll).observe(document.body, { childList: true, subtree: true });
+}());
+</script>
+
+<script>
+/* ════════════════════════════════════════════════════════════
+   MÓDULO — Login (Firebase Authentication)
+   Fluxo: Entrar | Primeiro acesso (usuário gerado de nome+matrícula,
+   senha provisória aleatória) -> aguardando aprovação do admin ->
+   troca obrigatória de senha -> app liberado.
+   Perfil em Firestore: usuarios/{uid} = { nome, matricula, usuario,
+   role: 'admin'|'supervisor', status: 'pendente'|'aprovado'|'recusado'|'bloqueado',
+   precisaTrocarSenha: boolean }.
+   A sincronização de dados (FTCloud) só inicia depois da aprovação.
+   ════════════════════════════════════════════════════════════ */
+var FTAuth = (function () {
+  'use strict';
+
+  var DOMINIO = '@ft.pjtecnologia.app';
+  var COLECAO_USUARIOS = 'usuarios';
+  var auth = null, fs = null, unsubPerfil = null;
+  var nuvemIniciada = false, cadastrando = false, credPendentes = null;
+  var usuarioAtual = null;
+
+  function $(id) { return document.getElementById(id); }
+
+  /* ───────── utilidades ───────── */
+  function semAcento(s) { return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, ''); }
+
+  function gerarUsuario(nome, matricula) {
+    var partes = semAcento(nome).toLowerCase().replace(/[^a-z\s]/g, ' ').trim().split(/\s+/).filter(Boolean);
+    var mat = semAcento(matricula).toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (!partes.length || !mat) return '';
+    var base = partes.length > 1 ? partes[0] + '.' + partes[partes.length - 1] : partes[0];
+    return base + mat;
+  }
+
+  function gerarSenha() {
+    var alfabeto = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+    var n = 10, out = '', buf = new Uint32Array(n);
+    (window.crypto || window.msCrypto).getRandomValues(buf);
+    for (var i = 0; i < n; i++) out += alfabeto.charAt(buf[i] % alfabeto.length);
+    return out;
+  }
+
+  function emailDe(login) {
+    var l = semAcento(login).trim().toLowerCase().replace(/\s+/g, '');
+    return l.indexOf('@') > -1 ? l : l + DOMINIO;
+  }
+
+  function msgErro(err) {
+    var c = (err && err.code) || '';
+    if (c === 'auth/invalid-credential' || c === 'auth/wrong-password' || c === 'auth/user-not-found' || c === 'auth/invalid-login-credentials') return 'Usuário ou senha incorretos.';
+    if (c === 'auth/too-many-requests') return 'Muitas tentativas. Aguarde alguns minutos e tente de novo.';
+    if (c === 'auth/network-request-failed') return 'Sem conexão com a internet. Verifique e tente de novo.';
+    if (c === 'auth/email-already-in-use') return 'Já existe cadastro com esse nome e matrícula. Use a aba Entrar. Se esqueceu a senha, peça ao administrador para redefinir.';
+    if (c === 'auth/weak-password') return 'Senha fraca. Use pelo menos 8 caracteres.';
+    if (c === 'auth/requires-recent-login') return 'Por segurança, saia e entre de novo para trocar a senha.';
+    if (c === 'auth/operation-not-allowed') return 'O login por senha não está ativado no Firebase (Authentication › Método de login).';
+    if (c === 'permission-denied') return 'Sem permissão no banco. As regras do Firestore ainda não foram publicadas.';
+    if (c === 'auth/user-disabled') return 'Este acesso foi desativado. Fale com o administrador.';
+    return 'Falha inesperada (' + (c || 'sem código') + '). Tente de novo.';
+  }
+
+  /* ───────── telas ───────── */
+  var TELAS = ['carregando', 'login', 'cred', 'pend', 'bloq', 'troca', 'erro'];
+
+  function mostrar(nome) {
+    TELAS.forEach(function (t) {
+      var el = $('authTela-' + t);
+      if (el) el.classList.toggle('auth-hide', t !== nome);
+    });
+    $('authOverlay').classList.remove('auth-hide');
+    document.body.classList.add('auth-ativo');
+    var foco = { login: 'authUsuario', troca: 'authSenhaAtual' }[nome];
+    if (foco && $(foco) && !$('authFormPrimeiro').offsetParent) { try { $(foco).focus({ preventScroll: true }); } catch (e) {} }
+  }
+
+  function esconderOverlay() {
+    $('authOverlay').classList.add('auth-hide');
+    document.body.classList.remove('auth-ativo');
+  }
+
+  function mostrarErro(id, texto) {
+    var el = $(id); if (!el) return;
+    el.textContent = texto || '';
+    el.classList.toggle('on', !!texto);
+  }
+
+  function ocupado(btnId, on, textoOcupado) {
+    var b = $(btnId); if (!b) return;
+    if (on) { b.dataset.txt = b.textContent; b.textContent = textoOcupado || 'Aguarde…'; b.disabled = true; }
+    else { if (b.dataset.txt) b.textContent = b.dataset.txt; b.disabled = false; }
+  }
+
+  function aba(qual) {
+    var entrar = qual === 'entrar';
+    $('authTabEntrar').classList.toggle('ativa', entrar);
+    $('authTabPrimeiro').classList.toggle('ativa', !entrar);
+    $('authTabEntrar').setAttribute('aria-selected', entrar);
+    $('authTabPrimeiro').setAttribute('aria-selected', !entrar);
+    $('authFormEntrar').classList.toggle('auth-hide', !entrar);
+    $('authFormPrimeiro').classList.toggle('auth-hide', entrar);
+    mostrarErro('authErroEntrar', ''); mostrarErro('authErroPrimeiro', '');
+  }
+
+  /* ───────── ações ───────── */
+  function entrar(ev) {
+    ev.preventDefault();
+    var login = $('authUsuario').value, senha = $('authSenha').value;
+    mostrarErro('authErroEntrar', '');
+    if (!login.trim() || !senha) { mostrarErro('authErroEntrar', 'Informe usuário e senha.'); return; }
+    ocupado('authBtnEntrar', true, 'Entrando…');
+    auth.signInWithEmailAndPassword(emailDe(login), senha)
+      .then(function () { $('authSenha').value = ''; })
+      .catch(function (err) { mostrarErro('authErroEntrar', msgErro(err)); })
+      .then(function () { ocupado('authBtnEntrar', false); });
+  }
+
+  function atualizarPrevia() {
+    var u = gerarUsuario($('authNome').value, $('authMatricula').value);
+    $('authPrevia').innerHTML = u ? 'Seu usuário será: <b>' + u + '</b>' : '';
+  }
+
+  function cadastrar(ev) {
+    ev.preventDefault();
+    mostrarErro('authErroPrimeiro', '');
+    var nome = $('authNome').value.replace(/\s+/g, ' ').trim();
+    var matricula = $('authMatricula').value.trim();
+    var usuario = gerarUsuario(nome, matricula);
+    if (nome.split(' ').length < 2) { mostrarErro('authErroPrimeiro', 'Digite o nome completo (nome e sobrenome).'); return; }
+    if (!usuario || !/[a-z0-9]/i.test(matricula)) { mostrarErro('authErroPrimeiro', 'Informe uma matrícula válida.'); return; }
+
+    var senha = gerarSenha();
+    cadastrando = true;
+    ocupado('authBtnPrimeiro', true, 'Criando acesso…');
+    var novoUser = null;
+    auth.createUserWithEmailAndPassword(emailDe(usuario), senha)
+      .then(function (cred) {
+        novoUser = cred.user;
+        return fs.collection(COLECAO_USUARIOS).doc(novoUser.uid).set({
+          nome: nome,
+          matricula: matricula,
+          usuario: usuario,
+          role: 'supervisor',
+          status: 'pendente',
+          precisaTrocarSenha: true,
+          criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      })
+      .then(function () {
+        try { novoUser.updateProfile({ displayName: nome }); } catch (e) {}
+        credPendentes = { usuario: usuario, senha: senha };
+        $('authCredUsuario').textContent = usuario;
+        $('authCredSenha').textContent = senha;
+        $('authNome').value = ''; $('authMatricula').value = ''; atualizarPrevia();
+        mostrar('cred');
+      })
+      .catch(function (err) {
+        cadastrando = false;
+        /* se o usuário foi criado mas o perfil falhou, desfaz para não deixar conta órfã */
+        if (novoUser) { novoUser.delete().catch(function () {}); }
+        mostrarErro('authErroPrimeiro', msgErro(err));
+      })
+      .then(function () { ocupado('authBtnPrimeiro', false); });
+  }
+
+  function continuarAposAnotar() {
+    credPendentes = null;
+    $('authCredSenha').textContent = '';
+    $('authCredUsuario').textContent = '';
+    cadastrando = false;
+    if (auth.currentUser) observarPerfil(auth.currentUser); else mostrar('login');
+  }
+
+  function copiarCred() {
+    if (!credPendentes) return;
+    var txt = 'Usuário: ' + credPendentes.usuario + '\nSenha: ' + credPendentes.senha;
+    var ok = function () { $('authBtnCopiar').textContent = 'Copiado ✓'; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, function () {});
+    else { try { var ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); ok(); } catch (e) {} }
+  }
+
+  function trocarSenha(ev) {
+    ev.preventDefault();
+    mostrarErro('authErroTroca', '');
+    var user = auth.currentUser;
+    var atual = $('authSenhaAtual').value, nova = $('authSenhaNova').value, conf = $('authSenhaConf').value;
+    if (!user) { mostrar('login'); return; }
+    if (!atual) { mostrarErro('authErroTroca', 'Informe a senha provisória.'); return; }
+    if (nova.length < 8) { mostrarErro('authErroTroca', 'A nova senha precisa ter pelo menos 8 caracteres.'); return; }
+    if (nova === atual) { mostrarErro('authErroTroca', 'A nova senha precisa ser diferente da provisória.'); return; }
+    if (nova !== conf) { mostrarErro('authErroTroca', 'As senhas novas não são iguais.'); return; }
+    ocupado('authBtnTroca', true, 'Salvando…');
+    var cred = firebase.auth.EmailAuthProvider.credential(user.email, atual);
+    user.reauthenticateWithCredential(cred)
+      .then(function () { return user.updatePassword(nova); })
+      .then(function () {
+        return fs.collection(COLECAO_USUARIOS).doc(user.uid).update({
+          precisaTrocarSenha: false,
+          senhaTrocadaEm: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      })
+      .then(function () {
+        $('authSenhaAtual').value = ''; $('authSenhaNova').value = ''; $('authSenhaConf').value = '';
+        /* o listener do perfil libera o app */
+      })
+      .catch(function (err) { mostrarErro('authErroTroca', msgErro(err)); })
+      .then(function () { ocupado('authBtnTroca', false); });
+  }
+
+  function sair() {
+    var fim = function () { location.reload(); };
+    if (unsubPerfil) { try { unsubPerfil(); } catch (e) {} unsubPerfil = null; }
+    if (auth) auth.signOut().then(fim, fim); else fim();
+  }
+
+  /* ───────── perfil / estado ───────── */
+  function observarPerfil(user) {
+    if (unsubPerfil) { try { unsubPerfil(); } catch (e) {} unsubPerfil = null; }
+    mostrar('carregando');
+    unsubPerfil = fs.collection(COLECAO_USUARIOS).doc(user.uid).onSnapshot(function (doc) {
+      if (!doc.exists) {
+        if (doc.metadata.fromCache) return; /* aguarda confirmação do servidor */
+        $('authErroGeralTxt').textContent = 'Seu usuário existe, mas não tem cadastro no sistema. Fale com o administrador.';
+        mostrar('erro');
+        return;
+      }
+      aplicarPerfil(doc.data() || {}, user);
+    }, function (err) {
+      $('authErroGeralTxt').textContent = msgErro(err);
+      mostrar('erro');
+    });
+  }
+
+  function aplicarPerfil(p, user) {
+    usuarioAtual = { uid: user.uid, nome: p.nome || '', usuario: p.usuario || '', role: p.role || 'supervisor' };
+    window.FT_USUARIO = usuarioAtual;
+    var st = p.status;
+    if (st === 'pendente') { $('authPendNome').textContent = p.nome || ''; mostrar('pend'); return; }
+    if (st === 'recusado') { $('authBloqTxt').textContent = 'Seu cadastro foi recusado pelo administrador.'; mostrar('bloq'); return; }
+    if (st === 'bloqueado') { $('authBloqTxt').textContent = 'Seu acesso foi bloqueado pelo administrador.'; mostrar('bloq'); return; }
+    if (st !== 'aprovado') { $('authBloqTxt').textContent = 'Seu acesso ainda não foi liberado. Fale com o administrador.'; mostrar('bloq'); return; }
+    if (p.precisaTrocarSenha) { $('authTrocaUser').value = p.usuario || ''; mostrar('troca'); return; }
+    liberar(p);
+  }
+
+  function liberar(p) {
+    esconderOverlay();
+    var info = $('railUsuarioInfo'), btn = $('btnSair');
+    if (info) { info.innerHTML = '<strong></strong>' + (p.role === 'admin' ? 'Administrador' : 'Supervisor'); info.firstChild.textContent = p.nome || p.usuario || ''; info.style.display = 'block'; }
+    if (btn) btn.style.display = '';
+    if (!nuvemIniciada) {
+      nuvemIniciada = true;
+      if (window.FTCloud && typeof FTCloud.iniciar === 'function') FTCloud.iniciar();
+    }
+  }
+
+  /* ───────── inicialização ───────── */
+  function ligarEventos() {
+    $('authTabEntrar').addEventListener('click', function () { aba('entrar'); });
+    $('authTabPrimeiro').addEventListener('click', function () { aba('primeiro'); });
+    $('authFormEntrar').addEventListener('submit', entrar);
+    $('authFormPrimeiro').addEventListener('submit', cadastrar);
+    $('authFormTroca').addEventListener('submit', trocarSenha);
+    $('authNome').addEventListener('input', atualizarPrevia);
+    $('authMatricula').addEventListener('input', atualizarPrevia);
+    $('authBtnAnotei').addEventListener('click', continuarAposAnotar);
+    $('authBtnCopiar').addEventListener('click', copiarCred);
+    $('authBtnRecarregar').addEventListener('click', function () { location.reload(); });
+    document.querySelectorAll('[data-auth-sair]').forEach(function (b) { b.addEventListener('click', sair); });
+    var btnSair = $('btnSair'); if (btnSair) btnSair.addEventListener('click', sair);
+    document.querySelectorAll('[data-olho]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var inp = $(b.getAttribute('data-olho')); if (!inp) return;
+        var mostrarSenha = inp.type === 'password';
+        inp.type = mostrarSenha ? 'text' : 'password';
+        b.setAttribute('aria-label', mostrarSenha ? 'Ocultar senha' : 'Mostrar senha');
+      });
+    });
+  }
+
+  function iniciar() {
+    ligarEventos();
+    if (typeof firebase === 'undefined' || !firebase.auth || !window.FTCloud || !FTCloud.garantirApp()) {
+      $('authErroGeralTxt').textContent = 'Não foi possível carregar o sistema de login. Verifique a internet e tente de novo.';
+      mostrar('erro');
+      return;
+    }
+    auth = firebase.auth();
+    fs = FTCloud.db();
+    mostrar('carregando');
+    auth.onAuthStateChanged(function (user) {
+      if (cadastrando) return;
+      if (!user) {
+        if (unsubPerfil) { try { unsubPerfil(); } catch (e) {} unsubPerfil = null; }
+        mostrar('login');
+        return;
+      }
+      observarPerfil(user);
+    });
+  }
+
+  iniciar();
+
+  return { usuario: function () { return usuarioAtual; }, sair: sair };
 }());
 </script>
 
