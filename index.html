@@ -374,6 +374,8 @@
   .funcao-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
   .chip-funcao { padding: 8px 14px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--input-bg); color: var(--text); font-family: 'Exo 2', sans-serif; font-weight: 700; font-size: .78rem; cursor: pointer; transition: border-color .15s, background .15s, color .15s; }
   .chip-funcao.sel { border-color: var(--accent2); background: rgba(38,222,129,.14); color: var(--accent2); }
+  .chip-funcao-item { display: inline-flex; align-items: center; gap: 6px; }
+  .chip-funcao-item .btn-remove { width: 30px; height: 30px; }
   .cadastro-badge { margin-left: auto; background: rgba(139,151,176,.18); color: var(--muted); font-size: .65rem; font-weight: 800; padding: 2px 9px; border-radius: 12px; }
 
   .add-row { display: flex; gap: 8px; margin-bottom: 16px; }
@@ -1033,17 +1035,12 @@
 
     <div class="cadastro-section">
       <h2 class="col-green">&#x1F3F7;&#xFE0F; Função de quem está indo</h2>
-      <p style="font-size:.76rem;color:var(--muted);margin:-8px 0 14px;">Texto exibido no campo "Quem está indo (…)" da Nova FT e da edição de lançamentos. Toque em uma opção ou digite a sua.</p>
-      <div class="funcao-chips" id="funcaoChips">
-        <button type="button" class="chip-funcao" data-v="Vigilante">Vigilante</button>
-        <button type="button" class="chip-funcao" data-v="Controlador de acesso">Controlador de acesso</button>
-        <button type="button" class="chip-funcao" data-v="Porteiro">Porteiro</button>
-        <button type="button" class="chip-funcao" data-v="Colaborador">Colaborador</button>
-        <button type="button" class="chip-funcao" data-v="Porteiro/Colaborador">Porteiro/Colaborador</button>
-      </div>
+      <p style="font-size:.76rem;color:var(--muted);margin:-8px 0 14px;">Texto exibido no campo "Quem está indo (…)" da Nova FT e da edição de lançamentos. Toque em uma opção para usá-la, no ✕ para excluir, ou adicione a sua.</p>
+      <div class="funcao-chips" id="funcaoChips"></div>
+      <p style="font-size:.76rem;color:var(--muted);margin:0 0 8px;">Adicionar nova opção:</p>
       <div class="add-row">
-        <input type="text" id="inputFuncaoRotulo" placeholder="Ex: Vigilante / Controlador de acesso" maxlength="40">
-        <button class="btn-add" id="btnSalvarFuncao">Salvar</button>
+        <input type="text" id="inputFuncaoNova" placeholder="Ex: Porteiro, Zelador…" maxlength="40">
+        <button type="button" class="btn-add" id="btnAddFuncao">+ Adicionar</button>
       </div>
       <p style="font-size:.76rem;color:var(--muted);margin-top:10px;">Prévia: <b class="col-green">Quem está indo (<span class="rotulo-funcao">Porteiro/Colaborador</span>)</b></p>
     </div>
@@ -1558,7 +1555,7 @@ var FTCloud = (function () {
   };
 
   var COLECAO = 'ft_app_data';
-  var CHAVES_SINCRONIZADAS = ['ft_postos', 'ft_colaboradores', 'ft_motivos', 'ft_lancamentos', 'ft_horarios_extra', 'ft_alertas_postos_v2', 'ft_funcao_rotulo'];
+  var CHAVES_SINCRONIZADAS = ['ft_postos', 'ft_colaboradores', 'ft_motivos', 'ft_lancamentos', 'ft_horarios_extra', 'ft_alertas_postos_v2', 'ft_funcao_rotulo', 'ft_funcao_opcoes'];
 
   var db = null;
   var pronto = false;
@@ -1656,7 +1653,7 @@ var FTCloud = (function () {
       refreshMotivoSelect();
       if (typeof window.renderCadastroMotivos === 'function') window.renderCadastroMotivos();
     }
-    if (chave === 'ft_funcao_rotulo' && typeof window.aplicarRotuloFuncao === 'function') window.aplicarRotuloFuncao();
+    if ((chave === 'ft_funcao_rotulo' || chave === 'ft_funcao_opcoes') && typeof window.aplicarRotuloFuncao === 'function') window.aplicarRotuloFuncao();
     if (chave === 'ft_alertas_postos_v2' && window.AlertasModule && typeof window.AlertasModule.aplicarRemoto === 'function') {
       window.AlertasModule.aplicarRemoto(valor);
     }
@@ -1759,35 +1756,85 @@ function refreshTodosOsSelects() {
 refreshTodosOsSelects();
 
 /* ════════════════════════════════════════════════════════════
-   MÓDULO — Função de quem está indo (rótulo configurável)
+   MÓDULO — Função de quem está indo (rótulo + opções editáveis)
+   Opções iniciais: Vigilante e Controlador de Acesso. Qualquer
+   opção (inclusive as iniciais) pode ser excluída, e novas podem
+   ser adicionadas; tudo sincroniza com a nuvem.
    ════════════════════════════════════════════════════════════ */
 (function () {
-  var CHAVE = 'ft_funcao_rotulo', PADRAO = 'Porteiro/Colaborador';
-  var input = document.getElementById('inputFuncaoRotulo');
-  var chips = document.querySelectorAll('#funcaoChips .chip-funcao');
+  var CHAVE = 'ft_funcao_rotulo', CHAVE_OP = 'ft_funcao_opcoes', PADRAO = 'Porteiro/Colaborador';
+  var OPCOES_INICIAIS = ['Vigilante', 'Controlador de Acesso'], VAZIO = '__vazio__';
+  var box = document.getElementById('funcaoChips');
+  var input = document.getElementById('inputFuncaoNova');
+  var btnAdd = document.getElementById('btnAddFuncao');
+
+  function iguais(a, b) { return String(a).trim().toLowerCase() === String(b).trim().toLowerCase(); }
+
+  function opcoes() {
+    var v = loadStorage(CHAVE_OP);
+    if (!Array.isArray(v) || !v.length) return OPCOES_INICIAIS.slice();
+    if (v[0] === VAZIO) return [];
+    return v.filter(function (x) { return typeof x === 'string' && x.trim(); });
+  }
+  function salvarOpcoes(lista) { saveStorage(CHAVE_OP, lista.length ? lista : [VAZIO]); }
 
   function atual() {
     var v = loadStorage(CHAVE);
     var t = Array.isArray(v) && typeof v[0] === 'string' ? v[0].trim() : '';
     return t || PADRAO;
   }
+
+  function render() {
+    var t = atual();
+    var lista = opcoes();
+    box.innerHTML = lista.length ? lista.map(function (o) {
+      return '<span class="chip-funcao-item">' +
+        '<button type="button" class="chip-funcao' + (iguais(o, t) ? ' sel' : '') + '" data-v="' + escHtml(o) + '">' + escHtml(o) + '</button>' +
+        '<button type="button" class="btn-remove chip-funcao-del" data-v="' + escHtml(o) + '" title="Excluir opção">&#x2715;</button>' +
+      '</span>';
+    }).join('') : '<p class="empty-state">Nenhuma opção cadastrada. Adicione abaixo.</p>';
+  }
+
   function aplicar() {
     var t = atual();
     document.querySelectorAll('.rotulo-funcao').forEach(function (el) { el.textContent = t; });
-    if (input && document.activeElement !== input) input.value = t;
-    chips.forEach(function (c) { c.classList.toggle('sel', c.dataset.v === t); });
+    render();
   }
   window.aplicarRotuloFuncao = aplicar;
 
-  chips.forEach(function (c) { c.addEventListener('click', function () { input.value = c.dataset.v; chips.forEach(function (x) { x.classList.toggle('sel', x === c); }); }); });
-  document.getElementById('btnSalvarFuncao').addEventListener('click', function () {
-    var t = input.value.trim();
-    if (!t) { showToast('⚠️ Digite o texto que deve aparecer.', 'error'); return; }
-    saveStorage(CHAVE, [t]);
+  function adicionar() {
+    var nome = input.value.trim();
+    if (!nome) { showToast('⚠️ Digite o nome da opção.', 'error'); return; }
+    var lista = opcoes();
+    if (lista.some(function (o) { return iguais(o, nome); })) { showToast('⚠️ Essa opção já existe.', 'error'); return; }
+    lista.push(nome);
+    salvarOpcoes(lista);
+    input.value = '';
+    render();
+    showToast('✅ Opção adicionada: ' + nome, 'success');
+  }
+
+  async function remover(valor) {
+    if (!(await pjConfirm({ titulo: 'Excluir opção', mensagem: 'Deseja excluir a opção', destaque: valor + '?', ok: 'Excluir' }))) return;
+    var restante = opcoes().filter(function (o) { return !iguais(o, valor); });
+    salvarOpcoes(restante);
+    if (iguais(atual(), valor)) saveStorage(CHAVE, [restante[0] || PADRAO]);
     aplicar();
-    showToast('✅ Função atualizada: ' + t, 'success');
+    showToast('🗑️ Opção excluída.', 'success');
+  }
+
+  box.addEventListener('click', function (e) {
+    var del = e.target.closest('.chip-funcao-del');
+    if (del) { remover(del.dataset.v); return; }
+    var chip = e.target.closest('.chip-funcao');
+    if (chip) {
+      saveStorage(CHAVE, [chip.dataset.v]);
+      aplicar();
+      showToast('✅ Função atualizada: ' + chip.dataset.v, 'success');
+    }
   });
-  input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('btnSalvarFuncao').click(); } });
+  btnAdd.addEventListener('click', adicionar);
+  input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); adicionar(); } });
   aplicar();
 }());
 
@@ -4423,4 +4470,11 @@ ateLabel();
   }
 
   function enhanceAll() {
-    document.querySelectorAll('select').forEach(e
+    document.querySelectorAll('select').forEach(enhance);
+  }
+
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('.cs-wrap')) return;
+    document.querySelectorAll('.cs-wrap.cs-open').forEach(function (w) {
+      w.classList.remove('cs-open');
+ 
