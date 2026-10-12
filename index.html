@@ -4909,15 +4909,34 @@ var FTAuth = (function () {
   function observarPerfil(user) {
     if (unsubPerfil) { try { unsubPerfil(); } catch (e) {} unsubPerfil = null; }
     mostrar('carregando');
-    unsubPerfil = fs.collection(COLECAO_USUARIOS).doc(user.uid).onSnapshot(function (doc) {
+    var ref = fs.collection(COLECAO_USUARIOS).doc(user.uid);
+    var respondeu = false;
+    function semCadastro() {
+      if (respondeu) return;
+      respondeu = true; clearTimeout(timer);
+      $('authErroGeralTxt').textContent = 'Seu login existe, mas não há cadastro em usuarios/' + user.uid + ' no Firestore. O ID do documento precisa ser exatamente este UID. Fale com o administrador.';
+      mostrar('erro');
+    }
+    var timer = setTimeout(function () {
+      if (respondeu) return;
+      respondeu = true;
+      $('authErroGeralTxt').textContent = 'Não consegui ler seu cadastro (sem resposta do servidor). Verifique a internet e se existe o documento usuarios/' + user.uid + ' no Firestore.';
+      mostrar('erro');
+    }, 10000);
+    unsubPerfil = ref.onSnapshot(function (doc) {
       if (!doc.exists) {
-        if (doc.metadata.fromCache) return; /* aguarda confirmação do servidor */
-        $('authErroGeralTxt').textContent = 'Seu usuário existe, mas não tem cadastro no sistema. Fale com o administrador.';
-        mostrar('erro');
+        if (doc.metadata.fromCache) {
+          /* cache vazio não prova nada: confirma direto no servidor */
+          ref.get({ source: 'server' }).then(function (d) { if (!d.exists) semCadastro(); }).catch(function () {});
+          return;
+        }
+        semCadastro();
         return;
       }
+      respondeu = true; clearTimeout(timer);
       aplicarPerfil(doc.data() || {}, user);
     }, function (err) {
+      respondeu = true; clearTimeout(timer);
       $('authErroGeralTxt').textContent = msgErro(err);
       mostrar('erro');
     });
